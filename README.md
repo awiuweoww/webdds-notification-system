@@ -10,10 +10,65 @@ Proyek ini adalah sebuah **Proof of Concept (PoC)** berskala _Enterprise_ yang m
 
 Proyek ini dibangun menggunakan arsitektur **pnpm workspaces** (Monorepo) yang membagikan satu _file_ kontrak komunikasi secara serempak.
 
-- **Frontend 1 & 2:** React 18, TypeScript, Rspack (Ultra-fast Bundler), Tailwind CSS.
-- **State Management:** Zustand (Dengan optimasi `Record<string, Data>` berkecepatan `O(1)`).
-- **Backend Gateway:** Node.js, Express, Socket/gRPC Dummy Generator.
-- **Protokol:** gRPC-Web / WebDDS Pattern (Pub/Sub).
+| Layer                  | Teknologi                                         |
+| :--------------------- | :------------------------------------------------ |
+| **Frontend 1 & 2**     | React 18, TypeScript, Rspack, Tailwind CSS        |
+| **State Management**   | Zustand (`Record<string, Data>` O(1) Performance) |
+| **Backend Gateway**    | Node.js + ConnectRPC                              |
+| **Kontrak Komunikasi** | Protocol Buffers (`.proto`)                       |
+| **Transport Protokol** | ConnectRPC (gRPC-Web tanpa APISIX/Docker)         |
+
+---
+
+## 🧠 Konsep WebDDS & Syarat Penggunaannya
+
+WebDDS adalah **Konsep Pertukaran Pesan Real-Time** (Publish-Subscribe) berbasis standar DDS industri berat (militer/satelit/pabrik) yang diadaptasi agar bisa berjalan di atas browser web modern.
+
+### 5 Syarat Wajib WebDDS
+
+1. **📄 Kontrak Bahasa (IDL / Protobuf)**
+   Semua komponen sistem _wajib_ menyepakati struktur data yang kaku dalam satu file kontrak (`.proto`). Tanpa ini, pertukaran data rentan kesalahan tipe dan tidak efisien. File `.proto` memastikan data terbang dalam format biner terkompresi (bukan teks JSON mentah yang membengkak).
+
+2. **📡 Definisi Topik (Topics)**
+   DDS bekerja berdasarkan saluran **Topik/Kategori**, bukan pengalamatan IP ke IP seperti REST API. Semua Publisher dan Subscriber sepakat untuk berbicara di "frekuensi" yang sama (Contoh: Topik `AlertBencana`, Topik `SensorData`).
+
+3. **🎭 Peran Aktor: Publisher & Subscriber**
+   Setiap komponen harus ditentukan perannya secara tegas:
+   - **Publisher (Penyiar):** Siapa yang memproduksi dan melempar data ke Topik. Contoh: FE 2 (Posko Lapangan) saat menekan tombol "Submit Laporan".
+   - **Subscriber (Pendengar):** Siapa yang berlangganan secara pasif. Contoh: FE 1 (Markas Pusat) yang layarnya terus diperbarui secara reaktif.
+
+4. **⚙️ Quality of Service (QoS)**
+   "Senjata rahasia" DDS. Developer harus memilih gaya pelayanan notifikasi per-Topik:
+   - **Reliability:** Apakah notifikasi yang hilang di jaringan diabaikan saja _(Best Effort)_ atau wajib dijamin sampai _(Reliable)_?
+   - **Durability:** Jika pengguna baru membuka tab, apakah mereka mendapat 10 notifikasi terakhir _(Transient Local)_ atau hanya notifikasi baru saja _(Volatile)_?
+
+5. **🌉 Jembatan Browser-DDS (Web Gateway)**
+   DDS asli berbicara bahasa RTPS/UDP Multicast yang **tidak dimengerti oleh browser web**. Karena itu, sebuah Gateway/Proxy penerjemah _wajib_ ada di tengah-tengah untuk menjembatani protokol DDS (Server) ke protokol yang browser pahami (HTTP/gRPC-Web).
+
+---
+
+## 🚛 Peran ConnectRPC Dalam Proyek Ini
+
+> **"ConnectRPC adalah Truk Angkutan yang menjembatani dunia DDS (Server) ke dunia Web (Browser)."**
+
+Jika proyek ini dikiaskan sebagai sistem pengiriman barang:
+
+| Komponen                 | Analogi                                  |
+| :----------------------- | :--------------------------------------- |
+| **Data Laporan Bencana** | Barang yang dikirim                      |
+| **File `.proto`**        | Label/Manifest paket (isi apa, tipe apa) |
+| **ConnectRPC**           | 🚛 **Truknya** (Kendaraan Pengangkut)    |
+| **FE 2 Posko**           | Gudang Pengirim (Publisher)              |
+| **Node.js Gateway**      | Terminal/Pelabuhan Transit               |
+| **FE 1 Pusat**           | Gudang Penerima (Subscriber)             |
+
+ConnectRPC memiliki **dua moda angkutan**:
+
+- **Truk Biasa (Unary):** FE 2 kirim sekali → langsung sampai → selesai. Cocok untuk tombol "Submit Laporan".
+- **Truk Kontainer Non-Stop (Server Streaming):** FE 1 berlangganan sekali, truk terus-menerus memompa data baru tanpa henti selama koneksi aktif. Ini mewujudkan konsep **Subscribe** WebDDS yang sesungguhnya!
+
+**Mengapa ConnectRPC dan Bukan APISIX/Docker?**
+APISIX adalah "Biro Penerjemah Profesional Raksasa" yang butuh Docker, RAM besar, dan konfigurasi YAML rumit. ConnectRPC adalah **truk pribadi milik sendiri** yang langsung jalan hanya dengan `pnpm dev:node-gateway` — cocok untuk skala PoC ini.
 
 ---
 
