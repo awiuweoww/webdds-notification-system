@@ -1,17 +1,18 @@
 import { create } from "zustand";
+
 import { enumMap } from "@constants/stream.constants";
 
 export interface DisasterReport {
-	id: string;                 
-	originId: string;           
-	sourceName: string;         
+	id: string;
+	originId: string;
+	sourceName: string;
 	latitude: string;
 	longitude: string;
-	bencanaType: string;        
-	statusLevel: number;        
-	statusPenanganan: number;   
+	bencanaType: string;
+	statusLevel: number;
+	statusPenanganan: number;
 	observationDetail: string;
-	timestamp: string;        
+	timestamp: string;
 }
 
 type ReportMap = Record<string, DisasterReport>;
@@ -28,7 +29,6 @@ export interface DisasterStoreState {
 
 export const useDisasterStore = create<DisasterStoreState>((set) => ({
 	reportsById: {},
-
 
 	/**
 	 * Apply an incoming report, updating the state if it exists.
@@ -61,7 +61,8 @@ export const useDisasterStore = create<DisasterStoreState>((set) => ({
 						...existing,
 						statusPenanganan: newPenangananStatus,
 						statusLevel:
-							newPenangananStatus === enumMap.statusPenanganan.STATUS_SUDAH_DIATASI
+							newPenangananStatus ===
+							enumMap.statusPenanganan.STATUS_SUDAH_DIATASI
 								? enumMap.levelBencana.LEVEL_NORMAL
 								: existing.statusLevel
 					}
@@ -72,8 +73,6 @@ export const useDisasterStore = create<DisasterStoreState>((set) => ({
 	clearAll: () => set({ reportsById: {} })
 }));
 
-
-
 /**
  * Returns all reports in the store.
  * @param {DisasterStoreState} s - The state of the disaster store.
@@ -81,7 +80,6 @@ export const useDisasterStore = create<DisasterStoreState>((set) => ({
  */
 export const selectAllReportsList = (s: DisasterStoreState): DisasterReport[] =>
 	Object.values(s.reportsById);
-
 
 /**
  * Returns the total number of reports in the store.
@@ -110,7 +108,6 @@ export const selectTotalDiatasi = (s: DisasterStoreState): number =>
 	Object.values(s.reportsById).filter(
 		(r) => r.statusPenanganan === enumMap.statusPenanganan.STATUS_SUDAH_DIATASI
 	).length;
-
 
 /**
  * Returns the total number of reports created today in the store.

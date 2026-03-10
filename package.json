@@ -12,6 +12,15 @@
     "postinstall": "pnpm --filter \"grpc-shared\" run generate-proto"
   },
   "devDependencies": {
-    "typescript": "^5.3.3"
+    "@eslint/js": "^10.0.1",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "eslint": "^10.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^17.4.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.3.3",
+    "typescript-eslint": "^8.57.0"
   }
 }
