@@ -1,0 +1,17 @@
+{
+  "name": "webdds-disaster-command-poc",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:pusat": "pnpm --filter \"fe-pusat\" run dev",
+    "dev:posko": "pnpm --filter \"fe-posko\" run dev",
+    "dev:fe": "pnpm --filter \"./apps/*\" run dev",
+    "dev:node-gateway": "pnpm --filter \"node-gateway\" run dev",
+    "dev:all": "pnpm dev:node-gateway & pnpm dev:fe",
+    "build:fe": "pnpm --filter \"./apps/*\" run build",
+    "postinstall": "pnpm --filter \"grpc-shared\" run generate-proto"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

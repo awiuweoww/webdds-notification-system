@@ -1,0 +1,36 @@
+import React from "react";
+
+/**
+ * KinematicIcon component
+ * @param {React.SVGProps<SVGSVGElement>} [props] - props to pass through to the SVG element
+ * @returns {React.ReactElement} - the rendered SVG element
+ * @description
+ * This component renders a Kinematic icon as an SVG element. It accepts all props that can be
+ * passed to an SVG element, and renders the icon in the current color.
+ * @example
+ * <KinematicIcon width="2em" height="2em" />
+ */
+const KinematicIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+	<svg
+		width="32"
+		height="32"
+		viewBox="0 0 32 32"
+		fill="none"
+		xmlns="http://www.w3.org/2000/svg"
+		{...props}
+	>
+		<g clipPath="url(#clip0_2176_32656)">
+			<path
+				d="M27.1734 11.4269L25.5334 13.8935C26.3243 15.471 26.7115 17.22 26.6603 18.9838C26.6091 20.7477 26.1211 22.4713 25.2401 24.0002H6.76007C5.61496 22.0137 5.14046 19.711 5.40692 17.4336C5.67338 15.1562 6.66661 13.0253 8.23937 11.3568C9.81213 9.68824 11.8807 8.57093 14.1384 8.17046C16.3961 7.77 18.7227 8.10771 20.7734 9.13354L23.2401 7.49354C20.7287 5.88316 17.7498 5.16154 14.7799 5.44412C11.81 5.72669 9.02066 6.99713 6.85806 9.05222C4.69545 11.1073 3.28455 13.8283 2.85102 16.78C2.4175 19.7316 2.9864 22.7434 4.46673 25.3335C4.69941 25.7366 5.03352 26.0717 5.43584 26.3056C5.83816 26.5395 6.2947 26.6641 6.76007 26.6669H25.2267C25.6966 26.6687 26.1587 26.5464 26.5661 26.3123C26.9735 26.0781 27.3118 25.7405 27.5467 25.3335C28.7752 23.2054 29.3918 20.7792 29.3282 18.3228C29.2647 15.8664 28.5236 13.4753 27.1867 11.4135L27.1734 11.4269ZM14.1201 20.5469C14.3677 20.7948 14.6618 20.9915 14.9856 21.1257C15.3093 21.2599 15.6563 21.329 16.0067 21.329C16.3572 21.329 16.7042 21.2599 17.0279 21.1257C17.3516 20.9915 17.6457 20.7948 17.8934 20.5469L25.4401 9.22687L14.1201 16.7735C13.8721 17.0212 13.6754 17.3153 13.5412 17.639C13.407 17.9628 13.338 18.3098 13.338 18.6602C13.338 19.0106 13.407 19.3576 13.5412 19.6814C13.6754 20.0051 13.8721 20.2992 14.1201 20.5469Z"
+				fill="currentColor"
+			/>
+		</g>
+		<defs>
+			<clipPath id="clip0_2176_32656">
+				<rect width="32" height="32" fill="white" />
+			</clipPath>
+		</defs>
+	</svg>
+);
+
+export default KinematicIcon;
