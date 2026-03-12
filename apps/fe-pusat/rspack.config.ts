@@ -1,5 +1,6 @@
 import { defineConfig } from "@rspack/cli";
 import { rspack } from "@rspack/core";
+import ReactRefreshPlugin from "@rspack/plugin-react-refresh";
 import * as path from "path";
 
 const isDev = process.env.NODE_ENV === "development";
@@ -89,8 +90,9 @@ export default defineConfig((env) => {
 		plugins: [
 			new rspack.HtmlRspackPlugin({
 				template: "./index.html"
-			})
-		],
+			}),
+			isDev && new ReactRefreshPlugin()
+		].filter(Boolean),
 		optimization: {
 			minimizer: [
 				new rspack.SwcJsMinimizerRspackPlugin(),

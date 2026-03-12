@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "generate-proto": "echo \"TODO: Script untuk generate file TS dari .proto dengan protoc\""
+    "clean": "shx rm -rf gen/* || true",
+    "generate-proto": "node -e \"require('fs').mkdirSync('./gen',{recursive:true})\" && protoc -I=./proto ./proto/*.proto --js_out=import_style=commonjs:./gen --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./gen"
+  },
+  "devDependencies": {
+    "grpc-tools": "^1.13.1",
+    "ts-protoc-gen": "^0.15.0"
   }
 }

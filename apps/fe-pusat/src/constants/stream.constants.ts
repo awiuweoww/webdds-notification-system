@@ -10,5 +10,6 @@ export const enumMap = {
 		STATUS_AKTIF_BARU: 0,
 		STATUS_SEDANG_PROSES: 1,
 		STATUS_SUDAH_DIATASI: 2,
+		STATUS_GAGAL_TERATASI: 3
 	} as Record<string, number>
 };
