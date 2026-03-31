@@ -5,48 +5,48 @@ import type { ButtonProps, ButtonVariant, ButtonColor } from "./Button.types";
 
 const buttonBaseStyles: Record<ButtonVariant, Record<ButtonColor, string>> = {
     solid: {
-        primary: "bg-brand-red text-white",
-        error: "bg-red-600 text-white",
-        success: "bg-green-600 text-white",
-        warning: "bg-yellow-500 text-white",
+        primary: "bg-primary-50 text-white",
+        error: "bg-btn-error text-white",
+        success: "bg-btn-success text-white",
+        warning: "bg-btn-warning text-white",
         neutral: "bg-neutral-600 text-white"
     },
     outline: {
-        primary: "border border-brand-red text-brand-red",
-        error: "border border-red-600 text-red-600",
-        success: "border border-green-600 text-green-600",
-        warning: "border border-yellow-500 text-yellow-500",
+        primary: "border border-primary-50 text-primary-50",
+        error: "border border-btn-error text-btn-error",
+        success: "border border-btn-success text-btn-success",
+        warning: "border border-btn-warning text-btn-warning",
         neutral: "border border-neutral-600 text-neutral-600"
     },
     ghost: {
-        primary: "bg-transparent text-brand-red",
-        error: "bg-transparent text-red-600",
-        success: "bg-transparent text-green-600",
-        warning: "bg-transparent text-yellow-500",
+        primary: "bg-transparent text-primary-50",
+        error: "bg-transparent text-btn-error",
+        success: "bg-transparent text-btn-success",
+        warning: "bg-transparent text-btn-warning",
         neutral: "bg-transparent text-neutral-600"
     }
 };
 
 const buttonHoverStyles: Record<ButtonVariant, Record<ButtonColor, string>> = {
     solid: {
-        primary: "hover:bg-brand-red/90",
-        error: "hover:bg-red-700",
-        success: "hover:bg-green-700",
-        warning: "hover:bg-yellow-600",
+        primary: "hover:bg-primary-50/90",
+        error: "hover:bg-btn-error-hover",
+        success: "hover:bg-btn-success-hover",
+        warning: "hover:bg-btn-warning-hover",
         neutral: "hover:bg-neutral-700"
     },
     outline: {
-        primary: "hover:bg-brand-red/10",
-        error: "hover:bg-red-50",
-        success: "hover:bg-green-50",
-        warning: "hover:bg-yellow-50",
+        primary: "hover:bg-primary-50/10",
+        error: "hover:bg-btn-error/10",
+        success: "hover:bg-btn-success/10",
+        warning: "hover:bg-btn-warning/10",
         neutral: "hover:bg-neutral-50"
     },
     ghost: {
-        primary: "hover:bg-brand-red/10",
-        error: "hover:bg-red-50",
-        success: "hover:bg-green-50",
-        warning: "hover:bg-yellow-50",
+        primary: "hover:bg-primary-50/10",
+        error: "hover:bg-btn-error/10",
+        success: "hover:bg-btn-success/10",
+        warning: "hover:bg-btn-warning/10",
         neutral: "hover:bg-neutral-50"
     }
 };

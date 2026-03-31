@@ -1,3 +1,10 @@
+/**
+ * Created Date       : 31-03-2026
+ * Description        : Komponen Footer layout utama aplikasi.
+ *
+ * Changelog:
+ * - 0.1.0 (31-03-2026): Implementasi awal Footer.
+ */
 import { memo } from "react";
 
 /**
@@ -12,7 +19,7 @@ const Footer = memo(() => {
 					PRIVASI DATA
 				</span>
 				<span className="hover:text-gray-700 cursor-pointer transition-colors">
-					STATUS API
+					STATUS
 				</span>
 				<span className="hover:text-gray-700 cursor-pointer transition-colors">
 					DOKUMENTASI

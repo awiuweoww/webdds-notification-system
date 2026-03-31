@@ -6,7 +6,7 @@ const customColors = require("./src/utils/colors");
 module.exports = {
 	mode: "jit",
 	content: ["./src/**/*.{js,ts,jsx,tsx}"],
-	darkMode: "media",
+	darkMode: "class",
 	important: true,
 	theme: {
 		extend: {

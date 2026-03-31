@@ -1,22 +1,42 @@
+/**
+ * Created Date       : 31-03-2026
+ * Description        : Komponen UI DisasterTable untuk menampilkan Live Data Grid laporan kejadian.
+ *
+ * Changelog:
+ * - 0.1.0 (31-03-2026): Implementasi awal DisasterTable.
+ */
 import { memo, useState } from "react";
 
 import { useDisasterStore, selectAllReportsList } from "@store/useDisasterStore";
 import { formatCoordinate } from "@utils/conversion/coordinateConversion";
 import { formatToShortTime } from "@utils/conversion/timeConversion";
 
-import type { DisasterReport } from "@types/disaster.types";
+
 
 import StatusBadge from "./StatusBadge";
 import PenangananBadge from "./PenangananBadge";
 import ReportDetailModal from "../modal/ReportDetailModal";
+import Modal from "../../common/modal/Modal";
+import Button from "../../common/button/Button";
 
-/**
- * Tabel Bencana Nasional — Menampilkan Live Data Grid dari Zustand store.
- */
+
 const DisasterTable = memo(() => {
 	const reports = useDisasterStore(selectAllReportsList);
-	const [selectedReport, setSelectedReport] =
-		useState<DisasterReport | null>(null);
+	const selectedReportId = useDisasterStore((state) => state.selectedReportId);
+	const setSelectedReportId = useDisasterStore((state) => state.setSelectedReportId);
+	const deleteReport = useDisasterStore((state) => state.deleteReport);
+	
+	const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+	const selectedReport = selectedReportId ? reports.find((r) => r.id === selectedReportId) : null;
+
+	const sortedReports = [...reports].sort((a, b) => {
+		const aResolved = a.statusPenanganan === 2 || a.statusPenanganan === 3;
+		const bResolved = b.statusPenanganan === 2 || b.statusPenanganan === 3;
+		if (aResolved && !bResolved) return 1;
+		if (!aResolved && bResolved) return -1;
+		return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+	});
 
 	return (
 		<div className="bg-white rounded-xl border border-gray-200 shadow-sm flex-1">
@@ -66,16 +86,16 @@ const DisasterTable = memo(() => {
 								</td>
 							</tr>
 						)}
-						{reports.map((report) => {
-							const isResolved = report.statusPenanganan === 2;
+						{sortedReports.map((report) => {
+							const isResolved = report.statusPenanganan === 2 || report.statusPenanganan === 3;
 
 							return (
 								<tr
 									key={report.id}
-									className={`border-b border-gray-50 transition-colors hover:bg-gray-50/70 cursor-pointer ${isResolved ? "bg-gray-100/60 opacity-70" : ""}`}
-									onClick={() => setSelectedReport(report)}
+									className={`border-b border-gray-50 transition-colors cursor-pointer ${isResolved ? "bg-gray-200 hover:bg-gray-200" : "hover:bg-gray-50/70"}`}
+									onClick={() => setSelectedReportId(report.id)}
 								>
-									<td className="px-5 py-4 font-medium text-[#1a2332] max-w-[160px]">
+									<td className="px-5 py-4 font-medium text-surface-dark max-w-[160px]">
 										{report.sourceName}
 									</td>
 									<td className="px-5 py-4 text-xs text-gray-600">
@@ -105,42 +125,18 @@ const DisasterTable = memo(() => {
 									</td>
 									<td className="px-5 py-4 text-center">
 										<div className="flex items-center justify-center gap-2">
-											{/* View */}
-											<button
-												className="text-gray-400 hover:text-blue-600 transition-colors"
-												onClick={(e) => {
-													e.stopPropagation();
-													setSelectedReport(report);
-												}}
-												aria-label="Lihat Detail"
-											>
-												<svg
-													width="16"
-													height="16"
-													viewBox="0 0 24 24"
-													fill="none"
-													stroke="currentColor"
-													strokeWidth="2"
-												>
-													<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-													<circle
-														cx="12"
-														cy="12"
-														r="3"
-													/>
-												</svg>
-											</button>
 											{/* Delete */}
 											<button
-												className="text-gray-400 hover:text-red-600 transition-colors"
+												className="text-gray-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
 												onClick={(e) => {
 													e.stopPropagation();
+													setConfirmDeleteId(report.id);
 												}}
 												aria-label="Hapus"
 											>
 												<svg
-													width="16"
-													height="16"
+													width="18"
+													height="18"
 													viewBox="0 0 24 24"
 													fill="none"
 													stroke="currentColor"
@@ -163,8 +159,39 @@ const DisasterTable = memo(() => {
 			{selectedReport && (
 				<ReportDetailModal
 					report={selectedReport}
-					onClose={() => setSelectedReport(null)}
+					onClose={() => setSelectedReportId(null)}
 				/>
+			)}
+
+			{/* Modal Konfirmasi Hapus */}
+			{confirmDeleteId && (
+				<Modal
+					isOpen={true}
+					onClose={() => setConfirmDeleteId(null)}
+					size="md"
+					title={
+						<div className="flex items-center gap-2">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+							<span className="font-bold text-[15px] uppercase tracking-wide">Konfirmasi Hapus</span>
+						</div>
+					}
+					className="border-b-[6px] border-b-btn-error"
+					headerClassName="bg-surface-dark text-white border-none py-4"
+				>
+					<div className="p-6">
+						<p className="text-sm text-gray-600 mb-6 leading-relaxed">
+							Apakah Anda yakin ingin menghapus laporan ini? Data yang terhapus tidak dapat dikembalikan.
+						</p>
+						<div className="flex gap-3">
+							<Button color="neutral" variant="outline" onClick={() => setConfirmDeleteId(null)} className="flex-1 font-bold tracking-widest py-3">
+								Batal
+							</Button>
+							<Button color="error" onClick={() => { deleteReport(confirmDeleteId); setConfirmDeleteId(null); }} className="flex-1 font-bold tracking-widest py-3">
+								Hapus
+							</Button>
+						</div>
+					</div>
+				</Modal>
 			)}
 		</div>
 	);

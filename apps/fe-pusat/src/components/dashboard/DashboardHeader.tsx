@@ -1,12 +1,16 @@
+/**
+ * Created Date       : 31-03-2026
+ * Description        : Komponen antarmuka DashboardHeader untuk memberikan navigasi header atas pada Dashboard.
+ *
+ * Changelog:
+ * - 0.1.0 (31-03-2026): Implementasi awal DashboardHeader.
+ */
 import { memo } from "react";
 
-/**
- * Header bagian atas konten dashboard — Judul halaman dan deskripsi singkat.
- */
 const DashboardHeader = memo(() => {
 	return (
 		<div className="mb-6">
-			<h1 className="text-2xl font-bold text-[#1a2332]">
+			<h1 className="text-2xl font-bold text-surface-dark">
 				Pusat Komando Nasional (sebagai FE 1)
 			</h1>
 			<p className="text-sm text-gray-500 mt-1">

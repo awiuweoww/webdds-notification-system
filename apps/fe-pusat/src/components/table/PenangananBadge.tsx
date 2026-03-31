@@ -1,3 +1,10 @@
+/**
+ * Created Date       : 31-03-2026
+ * Description        : Komponen UI PenangananBadge untuk menampilkan progress evakuasi/tindak lanjut.
+ *
+ * Changelog:
+ * - 0.1.0 (31-03-2026): Implementasi awal PenangananBadge.
+ */
 import { memo } from "react";
 
 import { cn } from "@utils/cn";
@@ -7,29 +14,26 @@ interface PenangananBadgeProps {
 	timestamp?: string;
 }
 
-/**
- * Badge kondisi pelaporan (SUDAH DIEVAKUASI, SEDANG PROSES, atau kosong jika AKTIF).
- */
+const config: Record<number, { text: string; className: string }> = {
+	1: {
+		text: "PROSES EVAKUASI",
+		className:
+			"border-yellow text-yellow bg-yellow/10"
+	},
+	2: {
+		text: "SUDAH DIEVAKUASI",
+		className:
+			"border-btn-success text-btn-success bg-btn-success/10"
+	},
+	3: {
+		text: "GAGAL DIEVAKUASI",
+		className:
+			"border-btn-error text-btn-error bg-btn-error/10"
+	}
+};
+
 const PenangananBadge = memo(({ status, timestamp }: PenangananBadgeProps) => {
 	if (status === 0) return null;
-
-	const config: Record<number, { text: string; className: string }> = {
-		1: {
-			text: "SEDANG PROSES",
-			className:
-				"border-yellow-500 text-yellow-700 bg-yellow-50"
-		},
-		2: {
-			text: "SUDAH DIEVAKUASI",
-			className:
-				"border-green-600 text-green-700 bg-green-50"
-		},
-		3: {
-			text: "GAGAL TERATASI",
-			className:
-				"border-red-600 text-red-700 bg-red-50"
-		}
-	};
 
 	const item = config[status];
 	if (!item) return null;
@@ -38,7 +42,7 @@ const PenangananBadge = memo(({ status, timestamp }: PenangananBadgeProps) => {
 		<div className="flex flex-col items-center gap-1">
 			<span
 				className={cn(
-					"px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide border",
+					"px-2.5 py-1.5 rounded-md text-[10px] font-bold tracking-wide border w-[130px] text-center whitespace-nowrap",
 					item.className
 				)}
 			>

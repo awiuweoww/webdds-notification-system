@@ -12,14 +12,15 @@ import { cn } from "../../utils/cn";
 
 // --- Types ---
 
-interface ModalProps extends HTMLAttributes<HTMLDivElement> {
+interface ModalProps extends Omit<HTMLAttributes<HTMLDivElement>, "title" | "color"> {
     isOpen: boolean;
     onClose: () => void;
     children: ReactNode;
-    title?: string;
-    description?: string;
+    title?: ReactNode;
+    description?: ReactNode;
     footer?: ReactNode;
     size?: "sm" | "md" | "lg" | "xl" | "full";
+    headerClassName?: string;
 }
 
 // --- Icons ---
@@ -53,6 +54,7 @@ const Modal: FC<ModalProps> = ({
     footer,
     size = "md",
     className,
+    headerClassName,
     ...props
 }) => {
     const overlayRef = useRef<HTMLDivElement>(null);
@@ -116,20 +118,21 @@ const Modal: FC<ModalProps> = ({
             >
                 {/* Header */}
                 {(title || description) && (
-                    <div className="flex flex-col space-y-1.5 p-6 pb-4 border-b border-neutral-100 dark:border-neutral-800 shrink-0">
+                    <div className={cn("flex flex-col space-y-1.5 p-5 pb-4 border-b border-neutral-100 shrink-0", headerClassName)}>
                         {title && (
-                            <h3 className="font-semibold leading-none tracking-tight text-lg text-neutral-900 dark:text-neutral-50 pr-8">
+                            <div className="font-semibold leading-none tracking-tight text-lg pr-8">
                                 {title}
-                            </h3>
+                            </div>
                         )}
                         {description && (
-                            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                            <div className="text-sm opacity-90 mt-1">
                                 {description}
-                            </p>
+                            </div>
                         )}
                         <button
                             onClick={onClose}
-                            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-neutral-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-500 dark:ring-offset-neutral-950 dark:focus:ring-neutral-300 dark:data-[state=open]:bg-neutral-800 dark:data-[state=open]:text-neutral-400"
+                            className={cn("absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2", 
+                                headerClassName ? "text-white" : "text-neutral-500")}
                         >
                             <XIcon className="h-4 w-4" />
                             <span className="sr-only">Close</span>

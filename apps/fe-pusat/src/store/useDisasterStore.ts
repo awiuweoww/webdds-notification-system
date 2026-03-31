@@ -20,20 +20,29 @@ type ReportMap = Record<string, DisasterReport>;
 export interface DisasterStoreState {
 	// State inti
 	reportsById: ReportMap;
+	selectedReportId: string | null;
+	readReportIds: string[];
 
 	// Actions (Mutations)
 	applyIncomingReport: (report: DisasterReport) => void;
 	updatePenanganan: (id: string, newPenangananStatus: number) => void;
+	deleteReport: (id: string) => void;
+	setSelectedReportId: (id: string | null) => void;
+	markAsRead: (id: string) => void;
+	markAllAsRead: () => void;
 	clearAll: () => void;
 }
 
 export const useDisasterStore = create<DisasterStoreState>((set) => ({
 	reportsById: {},
+	selectedReportId: null,
+	readReportIds: [],
 
 	/**
 	 * Apply an incoming report, updating the state if it exists.
 	 * If the report does not exist in the state, it will be added.
-	 * @param {DisasterReport} report - The incoming report.
+	 * @param report - The incoming report.
+	 * @returns void
 	 */
 	applyIncomingReport: (report) =>
 		set((state) => {
@@ -70,7 +79,33 @@ export const useDisasterStore = create<DisasterStoreState>((set) => ({
 			};
 		}),
 
-	clearAll: () => set({ reportsById: {} })
+	clearAll: () => set({ reportsById: {}, readReportIds: [] }),
+
+	deleteReport: (id) =>
+		set((state) => {
+			const newReports = { ...state.reportsById };
+			delete newReports[id];
+			
+			return {
+				reportsById: newReports,
+				readReportIds: state.readReportIds.filter((rId) => rId !== id),
+				selectedReportId: state.selectedReportId === id ? null : state.selectedReportId
+			};
+		}),
+
+	setSelectedReportId: (id) => set({ selectedReportId: id }),
+
+	markAsRead: (id) =>
+		set((state) => ({
+			readReportIds: state.readReportIds.includes(id)
+				? state.readReportIds
+				: [...state.readReportIds, id]
+		})),
+
+	markAllAsRead: () =>
+		set((state) => ({
+			readReportIds: Object.keys(state.reportsById)
+		}))
 }));
 
 /**
@@ -80,6 +115,14 @@ export const useDisasterStore = create<DisasterStoreState>((set) => ({
  */
 export const selectAllReportsList = (s: DisasterStoreState): DisasterReport[] =>
 	Object.values(s.reportsById);
+
+/**
+ * Returns all unread reports in the store.
+ * @param s - The state of the disaster store.
+ * @returns An array of unread reports.
+ */
+export const selectUnreadReportsList = (s: DisasterStoreState): DisasterReport[] =>
+	Object.values(s.reportsById).filter(r => !s.readReportIds.includes(r.id));
 
 /**
  * Returns the total number of reports in the store.
@@ -115,13 +158,18 @@ export const selectTotalDiatasi = (s: DisasterStoreState): number =>
  * @returns {number} The total number of reports created today in the store.
  */
 
+/**
+ * Returns the count of reports received today.
+ * @param s - The state of the disaster store.
+ * @returns The count of today's reports.
+ */
 export const selectLaporanHariIni = (s: DisasterStoreState): number => {
 	const today = new Date().toDateString();
 	return Object.values(s.reportsById).filter((r) => {
 		try {
 			const reportDate = new Date(r.timestamp).toDateString();
 			return reportDate === today;
-		} catch (e) {
+		} catch {
 			return false;
 		}
 	}).length;

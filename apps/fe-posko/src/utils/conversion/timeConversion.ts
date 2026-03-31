@@ -22,7 +22,7 @@ export const formatToShortTime = (timestamp: string | number): string => {
 			minute: "2-digit",
 			hour12: true
 		});
-	} catch (error) {
+	} catch {
 		return "-";
 	}
 };

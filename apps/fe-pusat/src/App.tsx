@@ -17,12 +17,14 @@ import { enumMap } from "@constants/stream.constants";
  */
 export default function App() {
 	const [dangerAlert, setDangerAlert] = useState<{
+		id: string;
 		sourceName: string;
 		message: string;
 	} | null>(null);
 
 	// Simulasi data dummy untuk demo UI (akan digantikan oleh gRPC stream nanti)
 	const applyIncomingReport = useDisasterStore((s) => s.applyIncomingReport);
+	const setSelectedReportId = useDisasterStore((s) => s.setSelectedReportId);
 
 	const handleSeedDummyData = () => {
 		const dummyReports = [
@@ -81,7 +83,8 @@ export default function App() {
 
 		// Simulasi alert bahaya untuk demo
 		setDangerAlert({
-			sourceName: "Sensor Gunung Merapi",
+			id: "STREAM-MERAPI-01",
+			sourceName: "Gunung Merapi - Sensor sektor 1",
 			message: "mendeteksi aktivitas bahaya!"
 		});
 	};
@@ -120,6 +123,7 @@ export default function App() {
 					message={dangerAlert.message}
 					onDismiss={() => setDangerAlert(null)}
 					onDetail={() => {
+						setSelectedReportId(dangerAlert.id);
 						setDangerAlert(null);
 					}}
 				/>

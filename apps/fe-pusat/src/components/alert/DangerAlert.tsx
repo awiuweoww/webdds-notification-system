@@ -1,3 +1,10 @@
+/**
+ * Created Date       : 31-03-2026
+ * Description        : Komponen notifikasi DangerAlert untuk memberi peringatan visual darurat.
+ *
+ * Changelog:
+ * - 0.1.0 (31-03-2026): Implementasi awal DangerAlert.
+ */
 import { memo, useState, useEffect } from "react";
 
 interface DangerAlertProps {
@@ -7,10 +14,7 @@ interface DangerAlertProps {
 	onDetail: () => void;
 }
 
-/**
- * Pop-up agresif PERINGATAN KRITIS yang muncul di pojok kanan bawah
- * ketika status BAHAYA masuk ke sistem.
- */
+
 const DangerAlert = memo(
 	({ message, sourceName, onDismiss, onDetail }: DangerAlertProps) => {
 		const [isVisible, setIsVisible] = useState(false);
@@ -21,6 +25,7 @@ const DangerAlert = memo(
 			return () => clearTimeout(timeout);
 		}, []);
 
+
 		const handleDismiss = () => {
 			setIsVisible(false);
 			setTimeout(onDismiss, 200);
@@ -28,7 +33,7 @@ const DangerAlert = memo(
 
 		return (
 			<div
-				className={`fixed bottom-6 right-6 z-50 w-[360px] bg-red-500 text-white rounded-xl shadow-2xl p-5 transition-all duration-300 ${
+				className={`fixed bottom-6 right-6 z-50 w-[360px] bg-btn-error text-white rounded-xl shadow-2xl p-5 transition-all duration-300 ${
 					isVisible
 						? "translate-y-0 opacity-100"
 						: "translate-y-4 opacity-0"
@@ -64,7 +69,7 @@ const DangerAlert = memo(
 				<div className="flex gap-3 mt-4">
 					<button
 						onClick={onDetail}
-						className="flex-1 py-2 border-2 border-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-red-500 transition-colors"
+						className="flex-1 py-2 border-2 border-white rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-btn-error transition-colors"
 					>
 						Lihat Detail
 					</button>

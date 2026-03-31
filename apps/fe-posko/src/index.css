@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#f4f6f8] text-[#1a1a1a] font-montserrat antialiased;
+  }
+}

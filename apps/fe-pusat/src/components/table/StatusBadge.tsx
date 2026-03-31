@@ -1,3 +1,10 @@
+/**
+ * Created Date       : 31-03-2026
+ * Description        : Komponen UI StatusBadge untuk menampilkan label/tag status tingkat bahaya.
+ *
+ * Changelog:
+ * - 0.1.0 (31-03-2026): Implementasi awal StatusBadge.
+ */
 import { memo } from "react";
 
 import { cn } from "@utils/cn";
@@ -7,28 +14,31 @@ interface StatusBadgeProps {
 	timestamp?: string;
 }
 
-/**
- * Label status warna-warni (BAHAYA merah, WASPADA kuning, NORMAL hijau, OFF abu-abu).
- */
+
+const config: Record<number, { text: string; className: string }> = {
+	0: {
+		text: "NORMAL",
+		className: "bg-btn-success text-white"
+	},
+	1: {
+		text: "WASPADA",
+		className: "bg-yellow text-white"
+	},
+	2: {
+		text: "SIAGA",
+		className: "bg-btn-warning text-white"
+	},
+	3: {
+		text: "AWAS",
+		className: "bg-btn-error text-white"
+	},
+	4: {
+		text: "OFF",
+		className: "bg-neutral-2 text-white"
+	}
+};
+
 const StatusBadge = memo(({ level, timestamp }: StatusBadgeProps) => {
-	const config: Record<number, { text: string; className: string }> = {
-		0: {
-			text: "NORMAL",
-			className: "bg-green-600 text-white"
-		},
-		1: {
-			text: "WASPADA",
-			className: "bg-yellow-500 text-white"
-		},
-		2: {
-			text: "BAHAYA",
-			className: "bg-red-600 text-white"
-		},
-		3: {
-			text: "OFF",
-			className: "bg-gray-400 text-white"
-		}
-	};
 
 	const { text, className } = config[level] || config[0];
 

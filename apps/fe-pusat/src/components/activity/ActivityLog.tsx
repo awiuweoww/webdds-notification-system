@@ -1,6 +1,14 @@
+/**
+ * Created Date       : 31-03-2026
+ * Description        : Komponen UI ActivityLog untuk menampilkan daftar riwayat interaksi atau log sistem pada Dashboard.
+ *
+ * Changelog:
+ * - 0.1.0 (31-03-2026): Implementasi awal ActivityLog.
+ */
 import { memo } from "react";
 
-import type { ActivityLogEntry } from "@types/disaster.types";
+import type { ActivityLogEntry } from "../../types/disaster.types";
+import Input from "@common/input/Input";
 
 import ActivityLogItem from "./ActivityLogItem";
 
@@ -55,12 +63,12 @@ const ActivityLog = memo(() => {
 						fill="none"
 						stroke="currentColor"
 						strokeWidth="2"
-						className="text-[#1a2332]"
+						className="text-surface-dark"
 					>
 						<circle cx="12" cy="12" r="10" />
 						<polyline points="12 6 12 12 16 14" />
 					</svg>
-					<h2 className="text-base font-bold text-[#1a2332]">
+					<h2 className="text-base font-bold text-surface-dark">
 						Recent Activity Log
 					</h2>
 				</div>
@@ -68,12 +76,11 @@ const ActivityLog = memo(() => {
 
 			{/* Filter */}
 			<div className="px-5 py-3 border-b border-gray-100">
-				<label className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold block mb-1.5">
-					Filter Tanggal
-				</label>
-				<input
+				<Input
 					type="date"
-					className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+					label="Filter Tanggal"
+					containerClassName="w-full"
+					className="text-sm border-gray-300 focus-visible:ring-blue-500 focus-visible:border-blue-500"
 				/>
 			</div>
 

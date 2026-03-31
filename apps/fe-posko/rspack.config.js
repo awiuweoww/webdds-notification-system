@@ -1,12 +1,14 @@
-import { defineConfig } from "@rspack/cli";
-import { rspack } from "@rspack/core";
-import * as path from "path";
+// @ts-check
+const { defineConfig } = require("@rspack/cli");
+const { rspack } = require("@rspack/core");
+const ReactRefreshPlugin = require("@rspack/plugin-react-refresh");
+const path = require("path");
 
 const isDev = process.env.NODE_ENV === "development";
 const targets = ["chrome >= 87", "edge >= 88", "firefox >= 78", "safari >= 14"];
 
-export default defineConfig((env) => {
-	// Menangkap port dari --env port=3000/3001, atau default 3001 untuk Posko
+module.exports = defineConfig((env) => {
+	// Menangkap port dari --env port=3001, atau default 3001 untuk Posko
 	let port = 3001;
 	if (env && env.port) {
 		port = Number(env.port);
@@ -60,6 +62,10 @@ export default defineConfig((env) => {
 					type: "asset"
 				},
 				{
+					test: /\.(png|jpg|jpeg|gif|webp)$/,
+					type: "asset/resource"
+				},
+				{
 					test: /\.[jt]sx?$/,
 					exclude: /node_modules/,
 					use: [
@@ -89,8 +95,9 @@ export default defineConfig((env) => {
 		plugins: [
 			new rspack.HtmlRspackPlugin({
 				template: "./index.html"
-			})
-		],
+			}),
+			isDev && new ReactRefreshPlugin()
+		].filter(Boolean),
 		optimization: {
 			minimizer: [
 				new rspack.SwcJsMinimizerRspackPlugin(),

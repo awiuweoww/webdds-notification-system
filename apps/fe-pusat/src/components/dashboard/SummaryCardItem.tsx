@@ -1,10 +1,14 @@
+/**
+ * Created Date       : 31-03-2026
+ * Description        : Komponen UI SummaryCardItem untuk satu *card* / blok tunggal metrik statistik di Dasboard.
+ *
+ * Changelog:
+ * - 0.1.0 (31-03-2026): Implementasi awal SummaryCardItem.
+ */
 import { memo } from "react";
 
-import type { SummaryCardProps } from "@types/disaster.types";
+import type { SummaryCardProps } from "../../types/disaster.types";
 
-/**
- * Satu kartu metrik statistik (Contoh: "Total Laporan Masuk — 1,284").
- */
 const SummaryCardItem = memo(
 	({ label, value, trend, trendColor, icon }: SummaryCardProps) => {
 		return (
@@ -13,7 +17,7 @@ const SummaryCardItem = memo(
 					{label}
 				</span>
 				<div className="flex items-end justify-between mt-3">
-					<span className="text-3xl font-bold text-[#1a2332]">
+					<span className="text-3xl font-bold text-surface-dark">
 						{typeof value === "number" ? value.toLocaleString("id-ID") : value}
 					</span>
 					{trend && (

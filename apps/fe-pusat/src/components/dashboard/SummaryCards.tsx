@@ -1,3 +1,10 @@
+/**
+ * Created Date       : 31-03-2026
+ * Description        : Komponen UI SummaryCards yang bertugas sebagai *container* untuk metrik statistik metrik utama.
+ *
+ * Changelog:
+ * - 0.1.0 (31-03-2026): Implementasi awal SummaryCards.
+ */
 import { memo } from "react";
 
 import { useDisasterStore } from "@store/useDisasterStore";
@@ -10,9 +17,6 @@ import {
 
 import SummaryCardItem from "./SummaryCardItem";
 
-/**
- * Baris 4 kartu metrik statistik dashboard.
- */
 const SummaryCards = memo(() => {
 	const totalMasuk = useDisasterStore(selectTotalLaporanMasuk);
 	const totalHariIni = useDisasterStore(selectLaporanHariIni);

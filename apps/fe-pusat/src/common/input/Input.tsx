@@ -14,6 +14,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             rightIcon,
             fullWidth = false,
             disabled,
+            type = "text",
             ...props
         },
         ref,
@@ -39,12 +40,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                     )}
                     <input
                         ref={ref}
+                        type={type}
                         disabled={disabled}
                         className={cn(
                             "flex h-12 w-full rounded-xl border border-neutral-300 bg-white px-4 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand-red focus-visible:border-brand-red disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-900 dark:ring-offset-neutral-950 dark:placeholder:text-neutral-400 transition-all duration-200",
                             leftIcon && "pl-11",
                             rightIcon && "pr-11",
                             error && "border-red-500 focus-visible:ring-red-500 focus-visible:border-red-500",
+                            type === "date" && "relative appearance-none [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-4 [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:top-1/2 [&::-webkit-calendar-picker-indicator]:-translate-y-1/2 hover:[&::-webkit-calendar-picker-indicator]:opacity-100",
                             className,
                         )}
                         {...props}
