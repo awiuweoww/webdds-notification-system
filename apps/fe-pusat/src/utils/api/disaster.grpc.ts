@@ -18,22 +18,12 @@
 
 import type { DisasterReport } from "../../types/disaster.types";
 
-// =============================================================================
-// KONFIGURASI
-// =============================================================================
 
 /**
  * URL endpoint APISIX proxy.
- * Rspack tidak membaca .env otomatis, hardcode untuk development.
  */
 const GRPC_PROXY_URL = "http://localhost:9080";
-
-/** Flag simulasi — true karena BE belum ada. Ganti ke false saat BE siap. */
 const IS_SIMULATION = true;
-
-// =============================================================================
-// TIPE RESPONSE
-// =============================================================================
 
 /** Respons dari operasi mutasi (update, delete). */
 interface MutationResponse {
@@ -48,9 +38,6 @@ interface ReportListResponse {
 	totalCount: number;
 }
 
-// =============================================================================
-// FUNGSI-FUNGSI gRPC SERVICE
-// =============================================================================
 
 /**
  * Mengambil seluruh laporan dari database.

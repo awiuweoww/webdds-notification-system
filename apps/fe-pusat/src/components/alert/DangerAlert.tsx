@@ -25,6 +25,10 @@ const DangerAlert = memo(
 		}, []);
 
 
+/**
+ * Menghilangkan notifikasi DangerAlert dan memanggil fungsi onDismiss setelah 200ms.
+ * Fungsi ini digunakan ketika tombol "Tutup" ditekan.
+ */
 		const handleDismiss = () => {
 			setIsVisible(false);
 			setTimeout(onDismiss, 200);
@@ -39,7 +43,6 @@ const DangerAlert = memo(
 				}`}
 			>
 				<div className="flex items-start gap-3">
-					{/* Icon */}
 					<div className="shrink-0 mt-0.5">
 						<svg
 							width="24"
@@ -53,7 +56,6 @@ const DangerAlert = memo(
 						</svg>
 					</div>
 
-					{/* Content */}
 					<div className="flex-1">
 						<h3 className="font-bold text-sm uppercase tracking-wide">
 							Peringatan Kritis
@@ -64,7 +66,6 @@ const DangerAlert = memo(
 					</div>
 				</div>
 
-				{/* Actions */}
 				<div className="flex gap-3 mt-4">
 					<button
 						onClick={onDetail}

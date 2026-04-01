@@ -34,7 +34,12 @@ const DisasterTable = memo(() => {
 
 	const selectedReport = selectedReportId ? reports.find((r) => r.id === selectedReportId) : null;
 
-	/** Cek apakah report sudah resolved berdasarkan enum. */
+
+/**
+ * Returns true if the given penanganan status is SUDAH DIATASI or GAGAL TERATASI, false otherwise.
+ * @param {number} penanganan - The status penanganan of a report.
+ * @returns {boolean} True if the report is resolved, false otherwise.
+ */
 	const isResolved = (penanganan: number) =>
 		penanganan === enumMap.statusPenanganan.STATUS_SUDAH_DIATASI ||
 		penanganan === enumMap.statusPenanganan.STATUS_GAGAL_TERATASI;

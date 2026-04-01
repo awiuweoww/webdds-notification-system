@@ -40,22 +40,14 @@ import * as grpcService from "../utils/api/disaster.grpc";
 import * as webddsService from "../utils/api/disaster.webdds";
 import { WEBDDS_TOPICS } from "../utils/api/disaster.webdds";
 
-// =============================================================================
-// TIPE-TIPE
-// =============================================================================
 
-/** Status koneksi WebDDS yang bisa ditampilkan di UI. */
 type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error" | "simulation";
 
-/** Nilai yang dikembalikan oleh hook ini. */
 interface UseDisasterSyncReturn {
 	/** Status koneksi WebDDS saat ini. */
 	connectionStatus: ConnectionStatus;
 }
 
-// =============================================================================
-// HOOK
-// =============================================================================
 
 /**
  * Hook utama yang menghubungkan kedua service layer ke store.
@@ -69,19 +61,12 @@ interface UseDisasterSyncReturn {
  * @returns Objek berisi status koneksi.
  */
 export function useDisasterSync(): UseDisasterSyncReturn {
-	// Status koneksi WebDDS untuk ditampilkan di UI (misal badge "CONNECTED").
 	const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>("connecting");
-
-	// Referensi ke fungsi store agar tidak perlu masuk dependency useEffect.
 	const applyIncomingReport = useDisasterStore((s) => s.applyIncomingReport);
 	const setLoading = useDisasterStore((s) => s.setLoading);
 	const setError = useDisasterStore((s) => s.setError);
 
 	useEffect(() => {
-
-		// ─────────────────────────────────────────────────────
-		// LANGKAH 1: Ambil data awal dari BE via gRPC
-		// ─────────────────────────────────────────────────────
 		/** Mengambil data awal dari gRPC dan memasukkan ke store. */
 		const fetchInitialData = async () => {
 			setLoading(true);
@@ -89,9 +74,6 @@ export function useDisasterSync(): UseDisasterSyncReturn {
 
 			try {
 				const response = await grpcService.getAllReports();
-
-				// Masukkan setiap report ke store satu per satu.
-				// Fungsi applyIncomingReport sudah punya validasi runtime.
 				response.reports.forEach((report) => {
 					applyIncomingReport(report);
 				});
@@ -110,17 +92,15 @@ export function useDisasterSync(): UseDisasterSyncReturn {
 
 		void fetchInitialData();
 
-		// ─────────────────────────────────────────────────────
-		// LANGKAH 2: Buka koneksi WebDDS dan subscribe topik
-		// ─────────────────────────────────────────────────────
 
-		// 2a. Buka koneksi ke broker dan pantau statusnya.
+
+		/**  Buka koneksi ke broker dan pantau statusnya. */
 		webddsService.connect((status) => {
 			setConnectionStatus(status === "connected" ? "connected" : status);
 			console.log(`[Sync] Status WebDDS: ${status}`);
 		});
 
-		// 2b. Subscribe topik "disaster-reports" — laporan manual dari Posko.
+		/** Subscribe topik "disaster-reports" — laporan manual dari Posko. */
 		const unsubReports = webddsService.subscribe(
 			WEBDDS_TOPICS.DISASTER_REPORTS,
 			(report) => {
@@ -142,7 +122,7 @@ export function useDisasterSync(): UseDisasterSyncReturn {
 			}
 		);
 
-		// 2c. Subscribe topik "sensor-stream" — data sensor dari BE.
+		/**  Subscribe topik "sensor-stream" — data sensor dari BE. */
 		const unsubSensor = webddsService.subscribe(
 			WEBDDS_TOPICS.SENSOR_STREAM,
 			(report) => {
@@ -161,10 +141,6 @@ export function useDisasterSync(): UseDisasterSyncReturn {
 				}
 			}
 		);
-
-		// ─────────────────────────────────────────────────────
-		// LANGKAH 3: Cleanup saat komponen di-unmount
-		// ─────────────────────────────────────────────────────
 		return () => {
 			unsubReports();
 			unsubSensor();
@@ -173,7 +149,7 @@ export function useDisasterSync(): UseDisasterSyncReturn {
 		};
 	}, [applyIncomingReport, setLoading, setError]);
 
-	// Cek status awal (simulation mode).
+
 	useEffect(() => {
 		const status = webddsService.getConnectionStatus();
 		if (status === "simulation") {

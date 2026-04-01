@@ -6,12 +6,24 @@
  * - 0.1.0 (31-03-2026): Ekstrak logika seed dummy data dari App.tsx.
  */
 import { useCallback } from "react";
-import { useDisasterStore } from "../store/useDisasterStore";
-import { enumMap } from "../constants/stream.constants";
 
+import { enumMap } from "../constants/stream.constants";
+import { useDisasterStore } from "../store/useDisasterStore";
+
+/**
+ * Hook untuk mengelola data dummy simulasi dan alert bahaya.
+ *
+ * Hook ini akan memberikan 2 fungsi, yaitu `handleSeedDummyData` dan
+ * `applyIncomingReport`. Fungsi `handleSeedDummyData` akan mengisi store dengan
+ * data dummy untuk keperluan demo, sedangkan fungsi `applyIncomingReport`
+ * akan mengisi store dengan laporan kejadian yang diterima dari WebDDS.
+ *
+ * @returns {Object} - Object yang berisi fungsi `handleSeedDummyData` dan
+ * `applyIncomingReport`.
+ */
 export const useDummyData = () => {
 	const applyIncomingReport = useDisasterStore((s) => s.applyIncomingReport);
-    const setDangerAlert = useDisasterStore((s) => s.setDangerAlert);
+	const setDangerAlert = useDisasterStore((s) => s.setDangerAlert);
 
 	/**
 	 * Mengisi store dengan data dummy untuk keperluan demo.
@@ -71,7 +83,6 @@ export const useDummyData = () => {
 
 		dummyReports.forEach((r) => applyIncomingReport(r));
 
-		// Simulasi alert bahaya untuk demo
 		setDangerAlert({
 			id: "STREAM-MERAPI-01",
 			sourceName: "Gunung Merapi - Sensor sektor 1",

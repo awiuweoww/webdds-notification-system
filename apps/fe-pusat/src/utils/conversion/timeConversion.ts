@@ -3,8 +3,7 @@
  */
 
 /**
- * Mengonversi string waktu ISO 8601 (atau string Date lain yang valid)
- * menjadi format jam singkat (Contoh: "10:45 AM") yang diperlukan untuk UI log dan tabel.
+ * Mengonversi string menjadi format jam singkat (Contoh: "10:45 AM") yang diperlukan untuk UI log dan tabel.
  *
  * @param {string} timestampStr - String waktu (ISO 8601 format direkomendasikan).
  * @returns {string} String waktu yang diformat. Mengembalikan "-" jika invalid.
@@ -13,8 +12,6 @@ export const formatToShortTime = (timestampStr: string): string => {
 	if (!timestampStr) return "-";
 	try {
 		const date = new Date(timestampStr);
-		
-		// Periksa apakah date valid
 		if (isNaN(date.getTime())) return "-";
 
 		return date.toLocaleTimeString("en-US", {

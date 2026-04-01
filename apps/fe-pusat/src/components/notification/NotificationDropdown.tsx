@@ -21,8 +21,13 @@ const NotificationDropdown = memo(({ show, onClose }: NotificationDropdownProps)
     const markAsRead = useDisasterStore((state) => state.markAsRead);
     const markAllAsRead = useDisasterStore((state) => state.markAllAsRead);
 
-    // Menutup notifikasi jika user klik di luar dropdown
     useEffect(() => {
+/**
+ * Fungsi untuk menangani klik di luar komponen NotificationDropdown.
+ * Jika klik terjadi di luar komponen, maka fungsi onClose akan dijalankan.
+ * Fungsi ini digunakan untuk menutup komponen NotificationDropdown secara otomatis ketika klik terjadi di luar komponen.
+ * @param {MouseEvent} event - Objek event klik.
+ */
         const handleClickOutside = (event: MouseEvent) => {
             if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
                 onClose();
@@ -37,11 +42,15 @@ const NotificationDropdown = memo(({ show, onClose }: NotificationDropdownProps)
 
     if (!show) return null;
 
-    // Menampilkan pesan yang belum terbaca saja (update dihilangkan)
     const latestReports = [...unreadReports]
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
         .slice(0, 5);
 
+/**
+ * Fungsi untuk menghapus semua notifikasi yang belum dibaca.
+ * Dipanggil saat button "Mark all as read" diklik.
+ * Fungsi ini akan menghapus semua notifikasi yang belum dibaca dan menutup komponen NotificationDropdown secara otomatis.
+ */
     const handleMarkAllRead = () => {
         markAllAsRead();
         onClose();
@@ -49,7 +58,6 @@ const NotificationDropdown = memo(({ show, onClose }: NotificationDropdownProps)
 
     return (
         <div ref={notifRef} className="absolute right-0 mt-3 w-[360px] bg-white rounded-lg shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50">
-            {/* Header Notifikasi */}
             <div className="flex justify-between items-center px-6 py-4 border-b border-gray-50 bg-white shadow-sm z-10">
                 <h3 className="font-bold text-sm text-surface-dark">Notifikasi</h3>
                 <button 
@@ -60,7 +68,6 @@ const NotificationDropdown = memo(({ show, onClose }: NotificationDropdownProps)
                 </button>
             </div>
 
-            {/* Daftar Item Notifikasi */}
             <div className="flex flex-col max-h-[400px] overflow-y-auto w-full text-left">
                 {latestReports.length === 0 && (
                     <div className="p-6 text-center text-sm text-gray-400">Belum ada notifikasi baru.</div>

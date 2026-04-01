@@ -13,17 +13,9 @@ import { useState, useCallback } from "react";
  */
 export const useNotification = () => {
 	const [showNotif, setShowNotif] = useState(false);
-
-	/**
-	 * Toggle visibilitas dropdown notifikasi.
-	 */
 	const toggleNotif = useCallback(() => {
 		setShowNotif((prev) => !prev);
 	}, []);
-
-	/**
-	 * Menutup dropdown notifikasi.
-	 */
 	const closeNotif = useCallback(() => {
 		setShowNotif(false);
 	}, []);

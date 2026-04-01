@@ -25,7 +25,15 @@ const SummaryCards = memo(() => {
 	const isLoading = useDisasterStore((s) => s.isLoading);
 	const error = useDisasterStore((s) => s.error);
 
-	/** Nilai yang ditampilkan: placeholder saat loading, tanda error, atau nilai asli. */
+	
+/**
+ * Mengembalikan nilai yang sesuai untuk ditampilkan di komponen UI
+ * SummaryCardItem. Jika isLoading maka akan mengembalikan "--", jika terjadi
+ * error maka akan mengembalikan "!", dan jika tidak maka akan mengembalikan
+ * nilai asli.
+ * @param {number} val - Nilai asli yang ingin ditampilkan.
+ * @returns {string | number} Nilai yang sudah diproses untuk ditampilkan di UI.
+ */
 	const displayValue = (val: number) => {
 		if (isLoading) return "--";
 		if (error) return "!";

@@ -42,7 +42,6 @@ export interface DangerAlertData {
 }
 
 export interface DisasterStoreState {
-	// State inti
 	reportsById: ReportMap;
 	selectedReportId: string | null;
 	readReportIds: string[];
@@ -50,7 +49,6 @@ export interface DisasterStoreState {
 	error: string | null;
 	dangerAlert: DangerAlertData | null;
 
-	// Actions (Mutations)
 	applyIncomingReport: (report: DisasterReport) => void;
 	updatePenanganan: (id: string, newPenangananStatus: number) => void;
 	deleteReport: (id: string) => void;
@@ -76,9 +74,10 @@ export const useDisasterStore = create<DisasterStoreState>((set) => ({
 	setDangerAlert: (alert) => set({ dangerAlert: alert }),
 
 	/**
-	 * Menerima report baru setelah validasi runtime.
-	 * Report yang tidak valid akan diabaikan dengan warning di console.
-	 * @param report - Report yang masuk.
+	 * Apply incoming report to store.
+	 * If report is invalid, print warning and ignore it.
+	 * @param report - Incoming report to apply.
+	 * @returns void
 	 */
 	applyIncomingReport: (report) =>
 		set((state) => {
@@ -99,6 +98,13 @@ export const useDisasterStore = create<DisasterStoreState>((set) => ({
 			};
 		}),
 
+	/**
+	 * Update status penanganan laporan di store.
+	 * Jika laporan tidak ditemukan, abaikan operasi.
+	 * @param id - ID laporan yang ingin diupdate.
+	 * @param newPenangananStatus - Status baru (0=Aktif, 1=Proses, 2=Diatasi, 3=Gagal).
+	 * @returns void
+	 */
 	updatePenanganan: (id, newPenangananStatus) =>
 		set((state) => {
 			const existing = state.reportsById[id];
@@ -122,6 +128,12 @@ export const useDisasterStore = create<DisasterStoreState>((set) => ({
 
 	clearAll: () => set({ reportsById: {}, readReportIds: [] }),
 
+	/**
+	 * Menghapus laporan berdasarkan ID di store.
+	 * Jika laporan yang dihapus sedang dipilih, maka selectedReportId akan direset menjadi null.
+	 * @param id - ID laporan yang ingin dihapus.
+	 * @returns void
+	 */
 	deleteReport: (id) =>
 		set((state) => {
 			const newReports = { ...state.reportsById };
@@ -136,6 +148,13 @@ export const useDisasterStore = create<DisasterStoreState>((set) => ({
 
 	setSelectedReportId: (id) => set({ selectedReportId: id }),
 
+/**
+ * Mark a report as read.
+ * If the report is already marked as read, do nothing.
+ * If the report is not marked as read, add it to the list of read reports.
+ * @param id - The ID of the report to mark as read.
+ * @returns void
+ */
 	markAsRead: (id) =>
 		set((state) => ({
 			readReportIds: state.readReportIds.includes(id)
@@ -143,66 +162,71 @@ export const useDisasterStore = create<DisasterStoreState>((set) => ({
 				: [...state.readReportIds, id]
 		})),
 
+/**
+ * Membuat semua laporan sebagai sudah dibaca.
+ * Jika laporan belum dibaca, maka akan ditambahkan ke dalam daftar laporan yang sudah dibaca.
+ * @returns void
+ */
 	markAllAsRead: () =>
 		set((state) => ({
 			readReportIds: Object.keys(state.reportsById)
 		}))
 }));
 
+
 /**
- * Returns all reports in the store.
- * @param {DisasterStoreState} s - The state of the disaster store.
- * @returns {DisasterReport[]} An array of all reports in the store.
+ * Mengembalikan daftar semua laporan yang ada dalam store.
+ * @param {DisasterStoreState} s - State dari store laporan.
+ * @returns {DisasterReport[]} Daftar laporan yang ada dalam store.
  */
 export const selectAllReportsList = (s: DisasterStoreState): DisasterReport[] =>
 	Object.values(s.reportsById);
 
+
 /**
- * Returns all unread reports in the store.
- * @param s - The state of the disaster store.
- * @returns An array of unread reports.
+ * Mengembalikan daftar laporan yang belum dibaca.
+ * @param {DisasterStoreState} s - State dari store laporan.
+ * @returns {DisasterReport[]} Daftar laporan yang belum dibaca.
  */
 export const selectUnreadReportsList = (s: DisasterStoreState): DisasterReport[] =>
 	Object.values(s.reportsById).filter(r => !s.readReportIds.includes(r.id));
 
+
 /**
- * Returns the total number of reports in the store.
- * @param {DisasterStoreState} s - The state of the disaster store.
- * @returns {number} The total number of reports in the store.
+ * Mengembalikan jumlah total laporan yang ada dalam store.
+ * @param {DisasterStoreState} s - State dari store laporan.
+ * @returns {number} Jumlah total laporan yang ada dalam store.
  */
 export const selectTotalLaporanMasuk = (s: DisasterStoreState): number =>
 	Object.keys(s.reportsById).length;
 
+
 /**
- * Returns the total number of reports with a status level of BAHAYA in the store.
- * @param {DisasterStoreState} s - The state of the disaster store.
- * @returns {number} The total number of reports with a status level of BAHAYA in the store.
+ * Mengembalikan jumlah total laporan yang berstatus penanganan AWAS.
+ * @param {DisasterStoreState} s - State dari store laporan.
+ * @returns {number} Jumlah total laporan yang berstatus penanganan AWAS.
  */
 export const selectTotalBahayaMasuk = (s: DisasterStoreState): number =>
 	Object.values(s.reportsById).filter(
 		(r) => r.statusLevel === enumMap.levelBencana.LEVEL_AWAS
 	).length;
 
+
 /**
- * Returns the total number of reports with a status penanganan of SUDAH DIATASI in the store.
- * @param {DisasterStoreState} s - The state of the disaster store.
- * @returns {number} The total number of reports with a status penanganan of SUDAH DIATASI in the store.
+ * Mengembalikan jumlah total laporan yang berstatus penanganan SUDAH DIATASI.
+ * @param {DisasterStoreState} s - State dari store laporan.
+ * @returns {number} Jumlah total laporan yang berstatus penanganan SUDAH DIATASI.
  */
 export const selectTotalDiatasi = (s: DisasterStoreState): number =>
 	Object.values(s.reportsById).filter(
 		(r) => r.statusPenanganan === enumMap.statusPenanganan.STATUS_SUDAH_DIATASI
 	).length;
 
-/**
- * Returns the total number of reports created today in the store.
- * @param {DisasterStoreState} s - The state of the disaster store.
- * @returns {number} The total number of reports created today in the store.
- */
 
 /**
- * Returns the count of reports received today.
- * @param s - The state of the disaster store.
- * @returns The count of today's reports.
+ * Mengembalikan jumlah total laporan yang terjadi hari ini.
+ * @param {DisasterStoreState} s - State dari store laporan.
+ * @returns {number} Jumlah total laporan yang terjadi hari ini.
  */
 export const selectLaporanHariIni = (s: DisasterStoreState): number => {
 	const today = new Date().toDateString();

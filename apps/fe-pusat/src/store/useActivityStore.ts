@@ -25,6 +25,8 @@ export const useActivityStore = create<ActivityStoreState>((set) => ({
 
     /**
      * Menambahkan entri log baru ke daftar paling atas.
+     * @param {ActivityLogEntry} newLog - Entri log baru yang akan ditambahkan.
+     * @returns void
      */
     appendLog: (newLog) =>
         set((state) => ({

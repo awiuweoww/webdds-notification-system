@@ -7,15 +7,16 @@
  * - 0.2.0 (31-03-2026): Refactor — logika dummy data dipindah ke useDummyData hook.
  * - 0.3.0 (31-03-2026): Integrasi useDisasterSync (gRPC + WebDDS).
  */
-import Navbar from "@component/layout/Navbar";
-import Footer from "@component/layout/Footer";
-import DashboardHeader from "@component/dashboard/DashboardHeader";
-import SummaryCards from "@component/dashboard/SummaryCards";
-import DisasterTable from "@component/table/DisasterTable";
 import ActivityLog from "@component/activity/ActivityLog";
 import DangerAlert from "@component/alert/DangerAlert";
-import { useDummyData } from "./hooks/useDummyData";
+import DashboardHeader from "@component/dashboard/DashboardHeader";
+import SummaryCards from "@component/dashboard/SummaryCards";
+import Footer from "@component/layout/Footer";
+import Navbar from "@component/layout/Navbar";
+import DisasterTable from "@component/table/DisasterTable";
+
 import { useDisasterSync } from "./hooks/useDisasterSync";
+import { useDummyData } from "./hooks/useDummyData";
 import { useDisasterStore } from "./store/useDisasterStore";
 
 /**
@@ -29,6 +30,11 @@ export default function App() {
 	const setDangerAlert = useDisasterStore((s) => s.setDangerAlert);
 	const setSelectedReportId = useDisasterStore((s) => s.setSelectedReportId);
 
+	/**
+	 * Menghandle notifikasi DangerAlert dan mengisi selectedReportId dengan ID laporan yang sesuai.
+	 * Jika dangerAlert tidak null, maka selectedReportId akan diisi dengan ID laporan yang sesuai
+	 * dan dangerAlert akan di-set menjadi null.
+	 */
 	const handleAlertDetail = () => {
 		if (dangerAlert) {
 			setSelectedReportId(dangerAlert.id);
@@ -36,10 +42,14 @@ export default function App() {
 		}
 	};
 
+	/**
+	 * Mengdismiss notifikasi DangerAlert.
+	 * Ketika tombol dismiss di klik, maka dangerAlert akan di-set menjadi null.
+	 * @returns void
+	 */
 	const dismissAlert = () => setDangerAlert(null);
 
-	// Menghubungkan gRPC (data awal) + WebDDS (real-time) ke store.
-	// connectionStatus bisa dipakai nanti untuk badge status di Navbar.
+	/** Menghubungkan data masuk dari WebDDS ke store. */
 	const { connectionStatus } = useDisasterSync();
 	console.log("[App] Status koneksi WebDDS:", connectionStatus);
 
@@ -50,8 +60,6 @@ export default function App() {
 			<main className="flex-1 px-6 py-6 max-w-[1280px] mx-auto w-full">
 				<DashboardHeader />
 				<SummaryCards />
-
-				{/* Tombol Demo Dummy — klik untuk mengisi tabel dengan data contoh */}
 				<div className="mb-4">
 					<button
 						onClick={handleSeedDummyData}
@@ -60,8 +68,6 @@ export default function App() {
 						🚀 Simulasi Data Masuk (Demo)
 					</button>
 				</div>
-
-				{/* Area Tabel + Activity Log */}
 				<div className="flex flex-col lg:flex-row gap-5">
 					<DisasterTable />
 					<ActivityLog />
@@ -70,7 +76,6 @@ export default function App() {
 
 			<Footer />
 
-			{/* Toast Alert Bahaya */}
 			{dangerAlert && (
 				<DangerAlert
 					sourceName={dangerAlert.sourceName}
