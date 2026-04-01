@@ -47,16 +47,21 @@ interface ClientMessage {
 	/** Topik tujuan (untuk publish) atau daftar topik (untuk subscribe). */
 	topic?: string;
 	topics?: string[];
+	/** Parameter filter untuk Content-Filtered Topics (opsional). */
+	filter?: {
+		field: string;
+		value: string;
+	};
 	/** Data yang dikirim (untuk publish). */
-	data?: unknown;
+	data?: any;
 }
 
 /** Informasi tentang satu client yang terhubung. */
 interface ClientInfo {
 	/** Koneksi WebSocket client. */
 	ws: WebSocket;
-	/** Daftar topik yang di-subscribe client ini. */
-	subscribedTopics: Set<string>;
+	/** Daftar topik yang di-subscribe client ini beserta filter-nya. */
+	subscriptions: Map<string, { field?: string; value?: string }>;
 	/** Label deskriptif untuk logging. */
 	label: string;
 }
@@ -99,7 +104,7 @@ function log(tag: string, message: string): void {
  */
 function relayToSubscribers(
 	topic: string,
-	data: unknown,
+	data: any,
 	sender?: WebSocket
 ): void {
 	let relayCount = 0;
@@ -110,7 +115,17 @@ function relayToSubscribers(
 		if (clientInfo.ws === sender) return;
 
 		// Cek apakah client ini subscribe ke topik ini.
-		if (!clientInfo.subscribedTopics.has(topic)) return;
+		const subConfig = clientInfo.subscriptions.get(topic);
+		if (!subConfig) return;
+
+		// ── EVALUASI FILTER (Content-Filtered Topics) ──
+		if (subConfig.field && subConfig.value) {
+			const fieldValue = (data as any)[subConfig.field];
+			if (fieldValue !== subConfig.value) {
+				// Data tidak cocok dengan filter client ini, jangan teruskan paket WebSocket
+				return;
+			}
+		}
 
 		// Cek apakah koneksi masih terbuka.
 		if (clientInfo.ws.readyState !== WebSocket.OPEN) return;
@@ -121,7 +136,9 @@ function relayToSubscribers(
 		relayCount++;
 	});
 
-	log("RELAY", `Topik "${topic}" → ${relayCount} subscriber menerima data.`);
+	if (relayCount > 0) {
+		log("RELAY", `Topik "${topic}" → ${relayCount} subscriber menerima data.`);
+	}
 }
 
 /**
@@ -146,8 +163,11 @@ function handleClientMessage(clientInfo: ClientInfo, rawMessage: string): void {
 		case "subscribe": {
 			const topics = message.topics || (message.topic ? [message.topic] : []);
 			topics.forEach((t) => {
-				clientInfo.subscribedTopics.add(t);
-				log("SUBSCRIBE", `${clientInfo.label} subscribe ke "${t}"`);
+				clientInfo.subscriptions.set(t, {
+					field: message.filter?.field,
+					value: message.filter?.value
+				});
+				log("SUBSCRIBE", `${clientInfo.label} subscribe ke "${t}" ${message.filter ? `[Filter: ${message.filter.field}=${message.filter.value}]` : ""}`);
 			});
 			break;
 		}
@@ -264,7 +284,7 @@ wss.on("connection", (ws: WebSocket) => {
 	// Daftarkan client baru.
 	const clientInfo: ClientInfo = {
 		ws,
-		subscribedTopics: new Set(),
+		subscriptions: new Map(),
 		label
 	};
 	clients.set(ws, clientInfo);

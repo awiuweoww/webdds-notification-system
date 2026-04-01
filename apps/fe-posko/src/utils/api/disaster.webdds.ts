@@ -61,6 +61,9 @@ const subscribers = new Map<string, Set<OnMessageCallback>>();
 /** Flag mencegah auto-reconnect saat unmount di React. */
 let isIntentionalDisconnect = false;
 
+/** Konfigurasi filter per topik. */
+const subscriberConfigs = new Map<string, { filter?: { field: string; value: string } }>();
+
 
 /**
  * Membuka koneksi ke WebDDS Broker.
@@ -86,10 +89,14 @@ export function connect(onStatus?: OnStatusCallback): void {
 
 			const topicsToSubscribe = Array.from(subscribers.keys());
 			if (topicsToSubscribe.length > 0 && wsConnection) {
-				wsConnection.send(JSON.stringify({
-					action: "subscribe",
-					topics: topicsToSubscribe,
-				}));
+				topicsToSubscribe.forEach(topic => {
+					const config = subscriberConfigs.get(topic);
+					wsConnection?.send(JSON.stringify({
+						action: "subscribe",
+						topic,
+						filter: config?.filter
+					}));
+				});
 			}
 		};
 
@@ -174,12 +181,26 @@ export async function publish(topic: string, data: unknown): Promise<PublishResu
  * @param callback - Fungsi yang dipanggil setiap data baru masuk.
  * @returns Fungsi unsubscribe.
  */
-export function subscribe(topic: string, callback: OnMessageCallback): () => void {
+export function subscribe(topic: string, callback: OnMessageCallback, filter?: { field: string; value: string }): () => void {
 	if (!subscribers.has(topic)) {
 		subscribers.set(topic, new Set());
 	}
 	subscribers.get(topic)!.add(callback);
-	console.log(`[WebDDS Posko] Subscribe ke topik: "${topic}"`);
+	
+	if (filter) {
+		subscriberConfigs.set(topic, { filter });
+	}
+
+	console.log(`[WebDDS Posko] Subscribe ke topik: "${topic}" ${filter ? `[Filter: ${filter.field}=${filter.value}]` : ""}`);
+
+	// Kirim ulang sub ke broker jika koneksi sudah ada
+	if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
+		wsConnection.send(JSON.stringify({
+			action: "subscribe",
+			topic,
+			filter
+		}));
+	}
 
 	return () => {
 		subscribers.get(topic)?.delete(callback);

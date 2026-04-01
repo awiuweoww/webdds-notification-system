@@ -79,6 +79,9 @@ let simulationIntervalId: ReturnType<typeof setInterval> | null = null;
 /** Flag apakah pemutusan disengaja agar tidak reconnect. */
 let isIntentionalDisconnect = false;
 
+/** Penyimpanan sementara konfigurasi filter per topik agar bisa dikirim ulang saat reconnect. */
+const subscriberConfigs = new Map<string, { filter?: { field: string; value: string } }>();
+
 // =============================================================================
 // FUNGSI-FUNGSI WEBDDS SERVICE
 // =============================================================================
@@ -114,10 +117,14 @@ export function connect(onStatus?: OnStatusCallback): void {
 			// Kirim daftar topik yang ingin di-subscribe ke broker.
 			const topicsToSubscribe = Array.from(subscribers.keys());
 			if (topicsToSubscribe.length > 0 && wsConnection) {
-				wsConnection.send(JSON.stringify({
-					action: "subscribe",
-					topics: topicsToSubscribe
-				}));
+				topicsToSubscribe.forEach(topic => {
+					const config = subscriberConfigs.get(topic);
+					wsConnection?.send(JSON.stringify({
+						action: "subscribe",
+						topic,
+						filter: config?.filter
+					}));
+				});
 			}
 		};
 
@@ -179,20 +186,25 @@ export function connect(onStatus?: OnStatusCallback): void {
  * unsub();
  * ```
  */
-export function subscribe(topic: string, callback: OnMessageCallback): () => void {
+export function subscribe(topic: string, callback: OnMessageCallback, filter?: { field: string; value: string }): () => void {
 	// Tambahkan callback ke daftar subscriber topik ini.
 	if (!subscribers.has(topic)) {
 		subscribers.set(topic, new Set());
 	}
 	subscribers.get(topic)!.add(callback);
 
-	console.log(`[WebDDS] Subscribe ke topik: "${topic}"`);
+	if (filter) {
+		subscriberConfigs.set(topic, { filter });
+	}
+
+	console.log(`[WebDDS] Subscribe ke topik: "${topic}" ${filter ? `[Filter: ${filter.field}=${filter.value}]` : ""}`);
 
 	// Jika sudah terkoneksi, kirim subscription baru ke broker.
 	if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
 		wsConnection.send(JSON.stringify({
 			action: "subscribe",
-			topics: [topic]
+			topic,
+			filter
 		}));
 	}
 

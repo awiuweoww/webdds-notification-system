@@ -19,6 +19,9 @@ import { WEBDDS_TOPICS } from "../utils/api/disaster.webdds";
 type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error" | "simulation";
 
 
+/** ID Identitas Posko Lokal. */
+const CURRENT_POSKO_ID = "POSKO-BDG-01";
+
 /**
  * Hook yang menghubungkan fe-posko ke WebDDS broker.
  * Membuka koneksi WebSocket dan subscribe ke topik status-updates.
@@ -39,7 +42,7 @@ export function usePoskoSync(): { connectionStatus: ConnectionStatus } {
 			console.log(`[Posko Sync] Status WebDDS: ${status}`);
 		});
 
-		/** Subscribe ke topik status-updates untuk menerima update dari Pusat. */
+		/** Subscribe ke topik status-updates dengan filter Server-Side. */
 		const unsubStatus = webddsService.subscribe(
 			WEBDDS_TOPICS.STATUS_UPDATES,
 			(data) => {
@@ -48,13 +51,15 @@ export function usePoskoSync(): { connectionStatus: ConnectionStatus } {
 				const addNotification = useNotifStore.getState().addNotification;
 				addNotification({
 					id: `notif-${Date.now()}`,
+					reportId: update.reportId, // Sertakan reportId untuk pembeda duplikat
 					timestamp: new Date().toLocaleTimeString("id-ID"),
 					title: "Update dari Pusat",
 					description: update.message || `Laporan ${update.reportId} diperbarui.`,
 					type: "info",
 				});
-				console.log("[Posko Sync] Update status dari Pusat:", update);
-			}
+				console.log("[Posko Sync] Update status dari Pusat diterima via Filter:", update);
+			},
+			{ field: "targetPoskoId", value: CURRENT_POSKO_ID } // Kirim kriteria ke Broker
 		);
 		return () => {
 			unsubStatus();

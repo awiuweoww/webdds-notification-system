@@ -18,6 +18,7 @@ import { create } from "zustand";
 /** Satu item notifikasi dari Pusat. */
 export interface PusatNotification {
 	id: string;
+	reportId?: string;
 	timestamp: string;
 	title: string;
 	description: string;
@@ -50,8 +51,10 @@ export const useNotifStore = create<NotifStoreState>((set) => ({
 	 */
 	addNotification: (notif) =>
 		set((state) => {
+			// Cegah duplikat total (pesan yang sama UNTUK laporan yang sama)
+			// Ini mengizinkan pesan "Sudah Diatasi" muncul berkali-kali asal reportId-nya berbeda
 			const isDuplicate = state.notifications.some(
-				(n) => n.description === notif.description && n.title === notif.title
+				(n) => n.description === notif.description && n.title === notif.title && n.reportId === notif.reportId
 			);
 			if (isDuplicate) return state;
 

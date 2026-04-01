@@ -56,6 +56,7 @@ const ReportDetailModal = memo(
 
 				publish(WEBDDS_TOPICS.STATUS_UPDATES, {
 					reportId: report.id,
+					targetPoskoId: report.originId,
 					newStatus: confirmPendingStatus.toString(),
 					message: messageStr
 				});
@@ -79,6 +80,7 @@ const ReportDetailModal = memo(
 			}
 		}, [
 			report.id,
+			report.originId,
 			report.sourceName,
 			confirmPendingStatus,
 			updatePenanganan,

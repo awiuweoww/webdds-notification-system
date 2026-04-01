@@ -31,18 +31,6 @@ export const useDummyData = () => {
 	const handleSeedDummyData = useCallback(() => {
 		const dummyReports = [
 			{
-				id: "STREAM-MERAPI-01",
-				originId: "SENSOR-MERAPI-01",
-				sourceName: "Gunung Merapi - Sensor sektor 1",
-				latitude: "-7.5407",
-				longitude: "110.4457",
-				bencanaType: "Gempa Bumi",
-				statusLevel: enumMap.levelBencana.LEVEL_AWAS,
-				statusPenanganan: enumMap.statusPenanganan.STATUS_AKTIF_BARU,
-				observationDetail: "",
-				timestamp: new Date().toISOString()
-			},
-			{
 				id: "STREAM-GEDE-01",
 				originId: "SENSOR-GEDE-01",
 				sourceName: "Gunung Gede - Pos 1",
