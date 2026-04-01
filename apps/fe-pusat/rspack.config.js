@@ -1,12 +1,13 @@
-import { defineConfig } from "@rspack/cli";
-import { rspack } from "@rspack/core";
-import ReactRefreshPlugin from "@rspack/plugin-react-refresh";
-import * as path from "path";
+// @ts-check
+const { defineConfig } = require("@rspack/cli");
+const { rspack } = require("@rspack/core");
+const ReactRefreshPlugin = require("@rspack/plugin-react-refresh");
+const path = require("path");
 
 const isDev = process.env.NODE_ENV === "development";
 const targets = ["chrome >= 87", "edge >= 88", "firefox >= 78", "safari >= 14"];
 
-export default defineConfig((env) => {
+module.exports = defineConfig((env) => {
 	// Menangkap port dari --env port=3000/3001, atau default 3000
 	let port = 3000;
 	if (env && env.port) {
@@ -59,6 +60,10 @@ export default defineConfig((env) => {
 				{
 					test: /\.svg$/,
 					type: "asset"
+				},
+				{
+					test: /\.(png|jpg|jpeg|gif|webp)$/,
+					type: "asset/resource"
 				},
 				{
 					test: /\.[jt]sx?$/,

@@ -35,7 +35,7 @@ export const bgColor = {
 export const dotColor: Record<string, string> = {
 	danger: "bg-btn-error",
 	warning: "bg-yellow",
-	success: "bg-neutral-2",
+	success: "bg-btn-success",
 	neutral: "bg-neutral-1",
 	system: "bg-neutral-1"
 };

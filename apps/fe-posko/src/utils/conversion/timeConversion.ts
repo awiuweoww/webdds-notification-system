@@ -1,9 +1,9 @@
 /**
- * Utilities for Date and Time conversions.
+ * Utilitas untuk konversi Tanggal dan Waktu.
  */
 
 /**
- * Mengonversi string waktu ISO 8601 (atau string Date lain yang valid)
+ * Mengubah timestamp (ISO string atau Number) menjadi format tanggal singkat (Contoh: "31 Mar 2026") yang diperlukan untuk UI log aktivitas lokal FE2.
  * menjadi format jam singkat (Contoh: "10:45 AM") yang diperlukan untuk UI log aktivitas lokal FE2.
  *
  * @param {string | number} timestamp - Waktu asal (ISO string atau timestamp Number).

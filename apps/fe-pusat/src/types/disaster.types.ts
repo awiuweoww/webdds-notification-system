@@ -20,6 +20,7 @@ export interface DisasterReport {
 export interface ActivityLogEntry {
 	id: string;
 	time: string;
+	date: string;
 	title: string;
 	description: string;
 	type: "danger" | "warning" | "success" | "neutral" | "system";

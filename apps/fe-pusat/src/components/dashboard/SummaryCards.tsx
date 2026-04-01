@@ -22,24 +22,33 @@ const SummaryCards = memo(() => {
 	const totalHariIni = useDisasterStore(selectLaporanHariIni);
 	const totalBahaya = useDisasterStore(selectTotalBahayaMasuk);
 	const totalDiatasi = useDisasterStore(selectTotalDiatasi);
+	const isLoading = useDisasterStore((s) => s.isLoading);
+	const error = useDisasterStore((s) => s.error);
+
+	/** Nilai yang ditampilkan: placeholder saat loading, tanda error, atau nilai asli. */
+	const displayValue = (val: number) => {
+		if (isLoading) return "--";
+		if (error) return "!";
+		return val;
+	};
 
 	return (
 		<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 			<SummaryCardItem
 				label="Total Laporan Masuk"
-				value={totalMasuk}
+				value={displayValue(totalMasuk)}
 				trend="~5%"
 				trendColor="bg-green-100 text-green-700"
 			/>
 			<SummaryCardItem
 				label="Laporan Hari Ini"
-				value={totalHariIni}
+				value={displayValue(totalHariIni)}
 				trend="~2%"
 				trendColor="bg-red-100 text-red-600"
 			/>
 			<SummaryCardItem
 				label="Total Laporan Bahaya Masuk"
-				value={totalBahaya}
+				value={displayValue(totalBahaya)}
 				icon={
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
 						<circle cx="12" cy="12" r="10" />
@@ -50,7 +59,7 @@ const SummaryCards = memo(() => {
 			/>
 			<SummaryCardItem
 				label="Total Laporan Diatasi"
-				value={totalDiatasi}
+				value={displayValue(totalDiatasi)}
 				icon={
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38a169" strokeWidth="2.5">
 						<circle cx="12" cy="12" r="10" />

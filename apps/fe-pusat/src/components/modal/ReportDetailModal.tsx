@@ -10,9 +10,11 @@ import { memo, useMemo, useCallback, useState } from "react";
 import Modal from "@common/modal/Modal";
 import { Button } from "@common/button/Button";
 import { useDisasterStore } from "@store/useDisasterStore";
+import { useActivityStore } from "@store/useActivityStore";
 import { enumMap } from "@constants/stream.constants";
 
 import type { DisasterReport } from "../../types/disaster.types";
+import { publish, WEBDDS_TOPICS } from "../../utils/api/disaster.webdds";
 
 import StatusBadge from "../table/StatusBadge";
 
@@ -31,11 +33,45 @@ const ReportDetailModal = memo(
 
 		const executeUpdateStatus = useCallback(() => {
             if (confirmPendingStatus !== null) {
+                // Update ke store lokal
                 updatePenanganan(report.id, confirmPendingStatus);
+                
+                // Publish status update ke broker untuk Posko
+                let messageStr = "";
+                // Pilih string untuk type badge ActivityLog
+                let logType: "danger" | "warning" | "success" | "neutral" | "system" = "neutral";
+                if (confirmPendingStatus === enumMap.statusPenanganan.STATUS_SEDANG_PROSES) {
+                    messageStr = `Laporan sedang diproses: ${report.sourceName}`;
+                    logType = "warning";
+                } else if (confirmPendingStatus === enumMap.statusPenanganan.STATUS_SUDAH_DIATASI) {
+                    messageStr = `Laporan telah diselesaikan: ${report.sourceName}`;
+                    logType = "success";
+                } else {
+                    messageStr = `Evakuasi gagal untuk: ${report.sourceName}`;
+                    logType = "danger";
+                }
+                
+                publish(WEBDDS_TOPICS.STATUS_UPDATES, {
+                    reportId: report.id,
+                    newStatus: confirmPendingStatus.toString(), // Posko expects string or any representation
+                    message: messageStr
+                });
+
+                // Catat aktivitas ke log dashboard
+                const appendLog = useActivityStore.getState().appendLog;
+                appendLog({
+                    id: `log-update-${report.id}-${Date.now()}`,
+                    time: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) + " WIB",
+                    date: new Date().toISOString().split('T')[0],
+                    title: "Status Diperbarui",
+                    description: `Operator (Pusat) telah merubah status penanganan: ${messageStr}`,
+                    type: logType
+                });
+
                 setConfirmPendingStatus(null);
                 onClose();
             }
-		}, [report.id, confirmPendingStatus, updatePenanganan, onClose]);
+		}, [report.id, report.sourceName, confirmPendingStatus, updatePenanganan, onClose]);
 
 		const formattedDate = useMemo(() => {
 			try {

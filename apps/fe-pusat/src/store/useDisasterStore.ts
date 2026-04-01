@@ -17,11 +17,38 @@ export interface DisasterReport {
 
 type ReportMap = Record<string, DisasterReport>;
 
+/**
+ * Validasi runtime untuk memastikan report dari API memiliki field yang dibutuhkan.
+ * @param report - Objek yang akan divalidasi.
+ * @returns true jika valid, false jika tidak.
+ */
+const validateReport = (report: unknown): report is DisasterReport => {
+	if (!report || typeof report !== "object") return false;
+	const r = report as Record<string, unknown>;
+	return (
+		typeof r.id === "string" && r.id.length > 0 &&
+		typeof r.sourceName === "string" &&
+		typeof r.bencanaType === "string" &&
+		typeof r.statusLevel === "number" &&
+		typeof r.statusPenanganan === "number" &&
+		typeof r.timestamp === "string"
+	);
+};
+
+export interface DangerAlertData {
+	id: string;
+	sourceName: string;
+	message: string;
+}
+
 export interface DisasterStoreState {
 	// State inti
 	reportsById: ReportMap;
 	selectedReportId: string | null;
 	readReportIds: string[];
+	isLoading: boolean;
+	error: string | null;
+	dangerAlert: DangerAlertData | null;
 
 	// Actions (Mutations)
 	applyIncomingReport: (report: DisasterReport) => void;
@@ -31,21 +58,34 @@ export interface DisasterStoreState {
 	markAsRead: (id: string) => void;
 	markAllAsRead: () => void;
 	clearAll: () => void;
+	setLoading: (loading: boolean) => void;
+	setError: (error: string | null) => void;
+	setDangerAlert: (alert: DangerAlertData | null) => void;
 }
 
 export const useDisasterStore = create<DisasterStoreState>((set) => ({
 	reportsById: {},
 	selectedReportId: null,
 	readReportIds: [],
+	isLoading: false,
+	error: null,
+	dangerAlert: null,
+
+	setLoading: (loading) => set({ isLoading: loading }),
+	setError: (error) => set({ error }),
+	setDangerAlert: (alert) => set({ dangerAlert: alert }),
 
 	/**
-	 * Apply an incoming report, updating the state if it exists.
-	 * If the report does not exist in the state, it will be added.
-	 * @param report - The incoming report.
-	 * @returns void
+	 * Menerima report baru setelah validasi runtime.
+	 * Report yang tidak valid akan diabaikan dengan warning di console.
+	 * @param report - Report yang masuk.
 	 */
 	applyIncomingReport: (report) =>
 		set((state) => {
+			if (!validateReport(report)) {
+				console.warn("[Store] Report tidak valid, diabaikan:", report);
+				return state;
+			}
 			const id = report.id;
 			return {
 				reportsById: {
@@ -54,7 +94,8 @@ export const useDisasterStore = create<DisasterStoreState>((set) => ({
 						...(state.reportsById[id] ?? {}),
 						...report
 					}
-				}
+				},
+				error: null
 			};
 		}),
 
@@ -139,7 +180,7 @@ export const selectTotalLaporanMasuk = (s: DisasterStoreState): number =>
  */
 export const selectTotalBahayaMasuk = (s: DisasterStoreState): number =>
 	Object.values(s.reportsById).filter(
-		(r) => r.statusLevel === enumMap.levelBencana.LEVEL_BAHAYA
+		(r) => r.statusLevel === enumMap.levelBencana.LEVEL_AWAS
 	).length;
 
 /**

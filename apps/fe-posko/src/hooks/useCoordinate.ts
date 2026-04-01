@@ -1,18 +1,18 @@
 /**
  * Created Date       : 31-03-2026
- * Description        : Hook for handling coordinate formatting logic.
+ * Description        : Hook untuk menangani logika pemformatan koordinat.
  *
  * Changelog:
- * - 0.1.0 (31-03-2026): Initial custom hook.
+ * - 0.1.0 (31-03-2026): Implementasi awal custom hook.
  */
 import { useState, ChangeEvent } from "react";
 import { formatCoordinate } from "../utils/conversion/coordinateConversion";
 
 /**
- * Custom hook to handle smart coordinate form logic.
- * @param initialValue - The initial unformatted string value.
- * @param type - Whether this is a Latitude or Longitude coordinate.
- * @returns State and event handlers for the coordinate input.
+ * Custom hook untuk menangani logika form koordinat cerdas.
+ * @param initialValue - Nilai string awal yang belum diformat.
+ * @param type - Apakah ini koordinat Latitude atau Longitude.
+ * @returns State dan event handler untuk input koordinat.
  */
 export const useCoordinate = (initialValue: string, type: "LAT" | "LNG") => {
   const [rawValue, setRawValue] = useState(initialValue);
@@ -29,10 +29,13 @@ export const useCoordinate = (initialValue: string, type: "LAT" | "LNG") => {
       return formatted !== "-" ? formatted : rawValue;
   })();
 
-  /**
-   * Handles text change events.
-   * @param e - React Change Event.
-   */
+  
+/**
+ * Mengupdate nilai state rawValue dengan nilai yang difilter
+ * untuk hanya mengizinkan angka, minus (di awal), dan 1 titik desimal.
+ * Nilai lainnya diabaikan.
+ * @param {ChangeEvent<HTMLInputElement>} e - Event yang terjadi saat input berubah.
+ */
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     
@@ -40,8 +43,6 @@ export const useCoordinate = (initialValue: string, type: "LAT" | "LNG") => {
         setRawValue(val);
         return;
     }
-    
-    // Hanya izinkan angka, minus (di awal), dan 1 titik desimal
     const match = val.replace(/[^\d.-]/g, "").match(/^-?\d*\.?\d*/);
     const cleanDigits = match ? match[0] : "";
     
@@ -49,13 +50,13 @@ export const useCoordinate = (initialValue: string, type: "LAT" | "LNG") => {
   };
 
   /**
-   * Handles focus state.
+   * Menangani state focus.
    * @returns void
    */
   const handleFocus = () => setIsFocused(true);
 
   /**
-   * Handles blur state.
+   * Menangani state blur.
    * @returns void
    */
   const handleBlur = () => setIsFocused(false);

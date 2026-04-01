@@ -11,10 +11,10 @@ const DashboardHeader = memo(() => {
 	return (
 		<div className="mb-6">
 			<h1 className="text-2xl font-bold text-surface-dark">
-				Pusat Komando Nasional (sebagai FE 1)
+				Pusat Komando Bencana (sebagai FE 1)
 			</h1>
 			<p className="text-sm text-gray-500 mt-1">
-				Sistem pemantauan bencana gempa bumi Nasional
+				Sistem pemantauan bencana Nasional
 			</p>
 		</div>
 	);

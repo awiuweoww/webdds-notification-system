@@ -20,7 +20,6 @@ const DangerAlert = memo(
 		const [isVisible, setIsVisible] = useState(false);
 
 		useEffect(() => {
-			// Sedikit delay agar animasi masuk berjalan mulus
 			const timeout = setTimeout(() => setIsVisible(true), 50);
 			return () => clearTimeout(timeout);
 		}, []);

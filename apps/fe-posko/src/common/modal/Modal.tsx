@@ -10,19 +10,18 @@ import {
 import { createPortal } from "react-dom";
 import { cn } from "../../utils/cn";
 
-// --- Types ---
-
-interface ModalProps extends HTMLAttributes<HTMLDivElement> {
+interface ModalProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
     isOpen: boolean;
     onClose: () => void;
     children: ReactNode;
-    title?: string;
-    description?: string;
+    title?: ReactNode;
+    description?: ReactNode;
     footer?: ReactNode;
     size?: "sm" | "md" | "lg" | "xl" | "full";
+    headerClassName?: string;
 }
 
-// --- Icons ---
+// --- Ikon ---
 
 const XIcon = ({ className }: { className?: string }) => (
     <svg
@@ -42,7 +41,7 @@ const XIcon = ({ className }: { className?: string }) => (
     </svg>
 );
 
-// --- Component ---
+// --- Komponen ---
 
 const Modal: FC<ModalProps> = ({
     isOpen,
@@ -52,13 +51,14 @@ const Modal: FC<ModalProps> = ({
     description,
     footer,
     size = "md",
+    headerClassName,
     className,
     ...props
 }) => {
     const overlayRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
 
-    // Handle ESC key press
+    // Menangani penekanan tombol ESC
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (isOpen && event.key === "Escape") {
@@ -68,18 +68,18 @@ const Modal: FC<ModalProps> = ({
 
         if (isOpen) {
             document.addEventListener("keydown", handleKeyDown);
-            // Prevent scrolling on body when modal is open
+            // Mencegah scroll pada body saat modal terbuka
             document.body.style.overflow = "hidden";
         }
 
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
-            // Restore scrolling on body
+            // Mengembalikan scroll pada body
             document.body.style.overflow = "unset";
         };
     }, [isOpen, onClose]);
 
-    // Handle click outside
+    // Menangani klik di luar modal
     const handleOverlayClick = (e: React.MouseEvent) => {
         if (overlayRef.current === e.target) {
             onClose();
@@ -107,32 +107,38 @@ const Modal: FC<ModalProps> = ({
                 role="dialog"
                 aria-modal="true"
                 className={cn(
-                    "relative w-full overflow-hidden rounded-xl bg-white text-neutral-900 shadow-lg ring-1 ring-neutral-950/5 dark:bg-neutral-950 dark:text-neutral-100 dark:ring-neutral-800 font-montserrat flex flex-col max-h-[90vh]",
+                    "relative w-full overflow-hidden rounded-xl bg-white text-neutral-900 shadow-lg ring-1 ring-neutral-950/5 font-montserrat flex flex-col max-h-[90vh]",
                     "animate-in zoom-in-95 duration-200",
                     sizeClasses[size],
                     className
                 )}
                 {...props}
             >
-                {/* Header */}
+                {/* Bagian Header */}
                 {(title || description) && (
-                    <div className="flex flex-col space-y-1.5 p-6 pb-4 border-b border-neutral-100 dark:border-neutral-800 shrink-0">
+                    <div className={cn("flex flex-col space-y-1.5 p-6 pb-4 border-b border-neutral-100 shrink-0", headerClassName)}>
                         {title && (
-                            <h3 className="font-semibold leading-none tracking-tight text-lg text-neutral-900 dark:text-neutral-50 pr-8">
-                                {title}
-                            </h3>
+                            typeof title === 'string' ? (
+                                <h3 className="font-semibold leading-none tracking-tight text-lg text-neutral-900 dark:text-neutral-50 pr-8">
+                                    {title}
+                                </h3>
+                            ) : (
+                                <div className="pr-8">{title}</div>
+                            )
                         )}
                         {description && (
-                            <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                                {description}
-                            </p>
+                            typeof description === 'string' ? (
+                                <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                                    {description}
+                                </p>
+                            ) : description
                         )}
                         <button
                             onClick={onClose}
                             className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-neutral-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-500 dark:ring-offset-neutral-950 dark:focus:ring-neutral-300 dark:data-[state=open]:bg-neutral-800 dark:data-[state=open]:text-neutral-400"
                         >
                             <XIcon className="h-4 w-4" />
-                            <span className="sr-only">Close</span>
+                            <span className="sr-only">Tutup</span>
                         </button>
                     </div>
                 )}
@@ -147,7 +153,7 @@ const Modal: FC<ModalProps> = ({
                     </button>
                 )}
 
-                {/* Content - Scrollable area */}
+                {/* Konten - Area yang bisa di-scroll */}
                 <div className="p-6 overflow-y-auto flex-1">
                     {children}
                 </div>

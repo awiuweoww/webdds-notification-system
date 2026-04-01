@@ -7,53 +7,21 @@
  */
 import { memo } from "react";
 
-import type { ActivityLogEntry } from "../../types/disaster.types";
 import Input from "@common/input/Input";
-
+import { useActivityStore } from "../../store/useActivityStore";
 import ActivityLogItem from "./ActivityLogItem";
 
-// Data contoh statis — nanti akan diganti oleh data dari store/stream
-const dummyLogs: ActivityLogEntry[] = [
-	{
-		id: "log-1",
-		time: "10:45 AM",
-		title: "Sinyal Bahaya Terdeteksi",
-		description:
-			"Sensor Seismik V2 (Pos 1) mendeteksi tremor skala 4.2 SR.",
-		type: "danger"
-	},
-	{
-		id: "log-2",
-		time: "09:12 AM",
-		title: "Pemeliharaan Selesai",
-		description:
-			"Sektor Anyer telah dikalibrasi ulang oleh Teknisi Lapangan.",
-		type: "success"
-	},
-	{
-		id: "log-3",
-		time: "08:50 AM",
-		title: "Peringatan Suhu Tinggi",
-		description:
-			"Titik panas terdeteksi di koordinat 0.5071° N (Kalimantan).",
-		type: "warning"
-	},
-	{
-		id: "log-4",
-		time: "07:30 AM",
-		title: "Sistem Reboot",
-		description: "Otomatisasi harian berhasil diselesaikan.",
-		type: "system"
-	}
-];
-
-/**
- * Panel Recent Activity Log (Sebelah kanan tabel pada dashboard).
- */
 const ActivityLog = memo(() => {
+	const logsList = useActivityStore((s) => s.logsList);
+	const filterDate = useActivityStore((s) => s.filterDate);
+	const setFilterDate = useActivityStore((s) => s.setFilterDate);
+
+	const filteredLogs = filterDate 
+		? logsList.filter(log => log.date === filterDate)
+		: logsList;
+
 	return (
 		<div className="bg-white rounded-xl border border-gray-200 shadow-sm w-full lg:w-[340px] shrink-0">
-			{/* Header */}
 			<div className="px-5 py-4 border-b border-gray-100">
 				<div className="flex items-center gap-2">
 					<svg
@@ -74,19 +42,22 @@ const ActivityLog = memo(() => {
 				</div>
 			</div>
 
-			{/* Filter */}
 			<div className="px-5 py-3 border-b border-gray-100">
 				<Input
 					type="date"
 					label="Filter Tanggal"
+					value={filterDate}
+					onChange={(e) => setFilterDate(e.target.value)}
 					containerClassName="w-full"
 					className="text-sm border-gray-300 focus-visible:ring-blue-500 focus-visible:border-blue-500"
 				/>
 			</div>
 
-			{/* Timeline */}
 			<div className="px-5 py-2 max-h-[400px] overflow-y-auto">
-				{dummyLogs.map((log) => (
+				{filteredLogs.length === 0 && (
+					<div className="text-center text-sm text-gray-400 py-4">Belum ada aktivitas.</div>
+				)}
+				{filteredLogs.map((log) => (
 					<ActivityLogItem key={log.id} {...log} />
 				))}
 			</div>

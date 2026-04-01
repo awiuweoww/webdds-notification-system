@@ -8,7 +8,6 @@ const isDev = process.env.NODE_ENV === "development";
 const targets = ["chrome >= 87", "edge >= 88", "firefox >= 78", "safari >= 14"];
 
 module.exports = defineConfig((env) => {
-	// Menangkap port dari --env port=3001, atau default 3001 untuk Posko
 	let port = 3001;
 	if (env && env.port) {
 		port = Number(env.port);

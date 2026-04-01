@@ -1,5 +1,12 @@
-import { useState } from "react";
-
+/**
+ * Created Date       : 31-03-2026
+ * Description        : Komponen Root Aplikasi FE 1 (Pusat Komando Bencana Nasional).
+ *
+ * Changelog:
+ * - 0.1.0 (31-03-2026): Implementasi awal.
+ * - 0.2.0 (31-03-2026): Refactor — logika dummy data dipindah ke useDummyData hook.
+ * - 0.3.0 (31-03-2026): Integrasi useDisasterSync (gRPC + WebDDS).
+ */
 import Navbar from "@component/layout/Navbar";
 import Footer from "@component/layout/Footer";
 import DashboardHeader from "@component/dashboard/DashboardHeader";
@@ -7,87 +14,34 @@ import SummaryCards from "@component/dashboard/SummaryCards";
 import DisasterTable from "@component/table/DisasterTable";
 import ActivityLog from "@component/activity/ActivityLog";
 import DangerAlert from "@component/alert/DangerAlert";
-
-import { useDisasterStore } from "@store/useDisasterStore";
-import { enumMap } from "@constants/stream.constants";
+import { useDummyData } from "./hooks/useDummyData";
+import { useDisasterSync } from "./hooks/useDisasterSync";
+import { useDisasterStore } from "./store/useDisasterStore";
 
 /**
  * Root App FE 1 — Pusat Komando Bencana Nasional.
  * Merakit seluruh komponen layout, dashboard, tabel, activity log, dan alert.
+ * @returns Komponen aplikasi yang telah dirender.
  */
 export default function App() {
-	const [dangerAlert, setDangerAlert] = useState<{
-		id: string;
-		sourceName: string;
-		message: string;
-	} | null>(null);
-
-	// Simulasi data dummy untuk demo UI (akan digantikan oleh gRPC stream nanti)
-	const applyIncomingReport = useDisasterStore((s) => s.applyIncomingReport);
+	const { handleSeedDummyData } = useDummyData();
+	const dangerAlert = useDisasterStore((s) => s.dangerAlert);
+	const setDangerAlert = useDisasterStore((s) => s.setDangerAlert);
 	const setSelectedReportId = useDisasterStore((s) => s.setSelectedReportId);
 
-	const handleSeedDummyData = () => {
-		const dummyReports = [
-			{
-				id: "STREAM-MERAPI-01",
-				originId: "SENSOR-MERAPI-01",
-				sourceName: "Gunung Merapi - Sensor sektor 1",
-				latitude: "-7.5407",
-				longitude: "110.4457",
-				bencanaType: "Gempa Bumi",
-				statusLevel: enumMap.levelBencana.LEVEL_BAHAYA,
-				statusPenanganan: enumMap.statusPenanganan.STATUS_AKTIF_BARU,
-				observationDetail: "",
-				timestamp: new Date().toISOString()
-			},
-			{
-				id: "STREAM-GEDE-01",
-				originId: "SENSOR-GEDE-01",
-				sourceName: "Gunung Gede - Pos 1",
-				latitude: "-6.0594",
-				longitude: "105.8897",
-				bencanaType: "Longsor",
-				statusLevel: enumMap.levelBencana.LEVEL_NORMAL,
-				statusPenanganan: enumMap.statusPenanganan.STATUS_AKTIF_BARU,
-				observationDetail: "",
-				timestamp: new Date().toISOString()
-			},
-			{
-				id: "STREAM-CIREMAI-02",
-				originId: "SENSOR-CIREMAI-02",
-				sourceName: "Gunung Ciremai - Pos 2",
-				latitude: "0.5071",
-				longitude: "116.4112",
-				bencanaType: "Longsor",
-				statusLevel: enumMap.levelBencana.LEVEL_WASPADA,
-				statusPenanganan: enumMap.statusPenanganan.STATUS_AKTIF_BARU,
-				observationDetail: "",
-				timestamp: new Date().toISOString()
-			},
-			{
-				id: "MANUAL-CIREMAI-POS1-NORMAL",
-				originId: "POSKO-CIREMAI-01",
-				sourceName: "Gunung ciremai - Pos 1",
-				latitude: "-6.8161",
-				longitude: "107.6191",
-				bencanaType: "Gempa Bumi",
-				statusLevel: enumMap.levelBencana.LEVEL_NORMAL,
-				statusPenanganan: enumMap.statusPenanganan.STATUS_SUDAH_DIATASI,
-				observationDetail:
-					"Berdasarkan pantauan di lapangan, debit air sungai Ciliwung mengalami peningkatan signifikan akibat curah hujan yang sangat tinggi di daerah hulu (Puncak).",
-				timestamp: new Date().toISOString()
-			}
-		];
-
-		dummyReports.forEach((r) => applyIncomingReport(r));
-
-		// Simulasi alert bahaya untuk demo
-		setDangerAlert({
-			id: "STREAM-MERAPI-01",
-			sourceName: "Gunung Merapi - Sensor sektor 1",
-			message: "mendeteksi aktivitas bahaya!"
-		});
+	const handleAlertDetail = () => {
+		if (dangerAlert) {
+			setSelectedReportId(dangerAlert.id);
+			setDangerAlert(null);
+		}
 	};
+
+	const dismissAlert = () => setDangerAlert(null);
+
+	// Menghubungkan gRPC (data awal) + WebDDS (real-time) ke store.
+	// connectionStatus bisa dipakai nanti untuk badge status di Navbar.
+	const { connectionStatus } = useDisasterSync();
+	console.log("[App] Status koneksi WebDDS:", connectionStatus);
 
 	return (
 		<div className="min-h-screen flex flex-col bg-[#f0f2f5]">
@@ -121,11 +75,8 @@ export default function App() {
 				<DangerAlert
 					sourceName={dangerAlert.sourceName}
 					message={dangerAlert.message}
-					onDismiss={() => setDangerAlert(null)}
-					onDetail={() => {
-						setSelectedReportId(dangerAlert.id);
-						setDangerAlert(null);
-					}}
+					onDismiss={dismissAlert}
+					onDetail={handleAlertDetail}
 				/>
 			)}
 		</div>

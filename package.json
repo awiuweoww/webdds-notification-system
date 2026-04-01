@@ -5,9 +5,10 @@
   "scripts": {
     "dev:pusat": "pnpm --filter \"fe-pusat\" run dev",
     "dev:posko": "pnpm --filter \"fe-posko\" run dev",
+    "dev:broker": "pnpm --filter \"ws-broker\" run dev",
     "dev:fe": "pnpm --filter \"./apps/*\" run dev",
     "dev:node-gateway": "pnpm --filter \"node-gateway\" run dev",
-    "dev:all": "pnpm dev:node-gateway & pnpm dev:fe",
+    "dev:all": "pnpm dev:broker & pnpm dev:fe",
     "build:fe": "pnpm --filter \"./apps/*\" run build",
     "postinstall": "pnpm --filter \"grpc-shared\" run generate-proto"
   },

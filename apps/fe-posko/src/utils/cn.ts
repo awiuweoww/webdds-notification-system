@@ -1,13 +1,11 @@
-import { clsx, type ClassValue } from "clsx";
+import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 /**
- * Utility function to merge tailwind classes safely.
- * @param inputs - Class names or conditional class objects.
- * @returns The merged and resolved class string.
+ * Fungsi utilitas untuk menggabungkan kelas tailwind secara aman.
+ * @param inputs - Nama kelas atau objek kelas bersyarat.
+ * @returns String kelas yang telah digabungkan dan diresolvasi.
  */
 export function cn(...inputs: ClassValue[]): string {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-    return twMerge(clsx(...inputs));
+	return twMerge(clsx(...inputs));
 }
-

@@ -31,4 +31,3 @@ export const bgColor = {
 	off: "bg-neutral-2",
 	neutral: "bg-neutral-1"
 };
-

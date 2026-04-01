@@ -1,37 +1,145 @@
+// ===========================================================================
+// File Proto: ddsgunung.proto
+// Deskripsi : Definisi kontrak data dan servis gRPC untuk sistem
+//             pemantauan bencana WebDDS Disaster Command.
+//
+// Arsitektur:
+//   - gRPC (via APISIX)  → untuk operasi request/response (CRUD ke DB)
+//   - WebDDS (Pub/Sub)   → untuk real-time streaming & notifikasi antar FE
+//
+// Catatan:
+//   - Streaming TIDAK didefinisikan di sini karena ditangani oleh WebDDS.
+//   - Proto ini hanya untuk operasi yang butuh respons dari server/DB.
+//   - Field menggunakan snake_case (standar protobuf),
+//     grpc-web otomatis mengkonversi ke camelCase di JavaScript.
+//
+// Changelog:
+//   - 0.1.0 (31-03-2026): Draft awal dengan SubscribeGlobalStream.
+//   - 0.2.0 (31-03-2026): Refactor — streaming dipindah ke WebDDS,
+//                          gRPC hanya untuk CRUD request/response.
+// ===========================================================================
+
 syntax = "proto3";
 
 package disaster.v1;
 
 option java_package = "id.disaster.v1";
 
+
+// ===========================================================================
+// MESSAGES — Struktur Data
+// ===========================================================================
+
+// Pesan kosong untuk RPC yang tidak butuh parameter input.
 message EmptyRequest {}
 
+// Data utama laporan bencana.
+// Digunakan oleh gRPC (CRUD) DAN WebDDS (Pub/Sub) sebagai format data bersama.
 message DisasterReport {
-  string id = 1;
-  string origin_id = 2;
-  string source_name = 3;
-  string latitude = 4;
-  string longitude = 5;
-  string bencana_type = 6;
-  int32 status_level = 7;
-  int32 status_penanganan = 8;
-  string observation_detail = 9;
-  string timestamp = 10;
+  string id                  = 1;   // ID unik laporan (contoh: "STREAM-MERAPI-01")
+  string origin_id           = 2;   // ID unit pengirim (contoh: "SENSOR-MERAPI-01")
+  string source_name         = 3;   // Nama lokasi/unit (contoh: "Gunung Merapi - Pos 1")
+  string latitude            = 4;   // Koordinat lintang (contoh: "-7.5407")
+  string longitude           = 5;   // Koordinat bujur (contoh: "110.4457")
+  string bencana_type        = 6;   // Jenis bencana (contoh: "Gempa Bumi", "Banjir")
+  int32  status_level        = 7;   // Level bahaya: 0=Normal, 1=Waspada, 2=Siaga, 3=Awas
+  int32  status_penanganan   = 8;   // Status penanganan: 0=Aktif, 1=Proses, 2=Diatasi, 3=Gagal
+  string observation_detail  = 9;   // Catatan observasi lapangan
+  string timestamp           = 10;  // Waktu kejadian (format ISO 8601)
 }
 
+
+// ===========================================================================
+// REQUEST MESSAGES — Parameter Input untuk RPC
+// ===========================================================================
+
+// Request untuk mengambil laporan berdasarkan ID.
+message ReportByIdRequest {
+  string report_id = 1;  // ID laporan yang ingin diambil
+}
+
+// Request untuk mengupdate status penanganan sebuah laporan.
 message UpdatePenangananRequest {
-  string report_id = 1;
-  int32 status_penanganan = 2;
+  string report_id          = 1;  // ID laporan target
+  int32  status_penanganan  = 2;  // Status baru (0=Aktif, 1=Proses, 2=Diatasi, 3=Gagal)
 }
 
-message PublishResponse {
-  bool success = 1;
-  string message = 2;
-  string receipt_id = 3;
+// Request untuk menghapus sebuah laporan.
+message DeleteReportRequest {
+  string report_id = 1;  // ID laporan yang akan dihapus
 }
+
+
+// ===========================================================================
+// RESPONSE MESSAGES — Format Balasan dari Server
+// ===========================================================================
+
+// Respons umum untuk operasi mutasi (update, delete, dsb).
+message PublishResponse {
+  bool   success    = 1;  // true jika operasi berhasil
+  string message    = 2;  // Pesan deskriptif (contoh: "Laporan berhasil dihapus")
+  string receipt_id = 3;  // ID tanda terima untuk tracking
+}
+
+// Respons berisi daftar laporan (untuk GetAllReports).
+message ReportListResponse {
+  repeated DisasterReport reports = 1;  // Array laporan dari database
+  int32 total_count               = 2;  // Total jumlah laporan
+}
+
+
+// ===========================================================================
+// SERVICE — Definisi RPC (Request/Response via APISIX)
+// ===========================================================================
+//
+// PENTING: Servis di bawah ini HANYA untuk operasi request/response.
+// Semua komunikasi real-time (streaming, notifikasi) menggunakan WebDDS.
+//
+// Alur penggunaan:
+//   FE (browser) ──gRPC-Web──► APISIX (proxy) ──gRPC──► BE (server) ──► DB
+//
 
 service DisasterCommandService {
-  rpc SubscribeGlobalStream(EmptyRequest) returns (stream DisasterReport);
-  rpc PublishManualReport(DisasterReport) returns (PublishResponse);
+
+  // Mengambil seluruh laporan dari database.
+  // Dipanggil saat FE pertama kali dibuka untuk mengisi tabel.
+  // Request : EmptyRequest (tidak perlu parameter)
+  // Response: ReportListResponse (array laporan + total count)
+  rpc GetAllReports(EmptyRequest) returns (ReportListResponse);
+
+  // Mengambil detail satu laporan berdasarkan ID.
+  // Dipanggil saat user klik baris tabel untuk lihat detail.
+  // Request : ReportByIdRequest (report_id)
+  // Response: DisasterReport (data lengkap laporan)
+  rpc GetReportById(ReportByIdRequest) returns (DisasterReport);
+
+  // Mengupdate status penanganan sebuah laporan di database.
+  // Dipanggil saat Pusat mengubah status (Aktif → Proses → Diatasi/Gagal).
+  // Request : UpdatePenangananRequest (report_id + status baru)
+  // Response: PublishResponse (sukses/gagal + pesan)
   rpc UpdateStatusPenanganan(UpdatePenangananRequest) returns (PublishResponse);
+
+  // Menghapus laporan dari database.
+  // Dipanggil saat Pusat menghapus laporan dari tabel.
+  // Request : DeleteReportRequest (report_id)
+  // Response: PublishResponse (sukses/gagal + pesan)
+  rpc DeleteReport(DeleteReportRequest) returns (PublishResponse);
 }
+
+
+// ===========================================================================
+// WEBDDS TOPICS (Dokumentasi — bukan bagian dari proto)
+// ===========================================================================
+//
+// Berikut adalah topik WebDDS yang digunakan untuk komunikasi Pub/Sub.
+// Data yang dikirim menggunakan format DisasterReport (di atas).
+//
+// ┌──────────────────────┬────────────┬──────────────────┬──────────────────────┐
+// │ Topic                │ Publisher  │ Subscriber       │ Fungsi               │
+// ├──────────────────────┼────────────┼──────────────────┼──────────────────────┤
+// │ disaster-reports     │ FE Posko   │ FE Pusat, BE     │ Laporan form manual  │
+// │ sensor-stream        │ BE         │ FE Pusat         │ Data sensor berkala  │
+// │ status-updates       │ FE Pusat   │ FE Posko, BE     │ Update penanganan    │
+// └──────────────────────┴────────────┴──────────────────┴──────────────────────┘
+//
+// ===========================================================================

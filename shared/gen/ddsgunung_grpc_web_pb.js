@@ -79,15 +79,76 @@ proto.disaster.v1.DisasterCommandServicePromiseClient =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.disaster.v1.EmptyRequest,
- *   !proto.disaster.v1.DisasterReport>}
+ *   !proto.disaster.v1.ReportListResponse>}
  */
-const methodDescriptor_DisasterCommandService_SubscribeGlobalStream = new grpc.web.MethodDescriptor(
-  '/disaster.v1.DisasterCommandService/SubscribeGlobalStream',
-  grpc.web.MethodType.SERVER_STREAMING,
+const methodDescriptor_DisasterCommandService_GetAllReports = new grpc.web.MethodDescriptor(
+  '/disaster.v1.DisasterCommandService/GetAllReports',
+  grpc.web.MethodType.UNARY,
   proto.disaster.v1.EmptyRequest,
-  proto.disaster.v1.DisasterReport,
+  proto.disaster.v1.ReportListResponse,
   /**
    * @param {!proto.disaster.v1.EmptyRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.disaster.v1.ReportListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.disaster.v1.EmptyRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.disaster.v1.ReportListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.disaster.v1.ReportListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.disaster.v1.DisasterCommandServiceClient.prototype.getAllReports =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/disaster.v1.DisasterCommandService/GetAllReports',
+      request,
+      metadata || {},
+      methodDescriptor_DisasterCommandService_GetAllReports,
+      callback);
+};
+
+
+/**
+ * @param {!proto.disaster.v1.EmptyRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.disaster.v1.ReportListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.disaster.v1.DisasterCommandServicePromiseClient.prototype.getAllReports =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/disaster.v1.DisasterCommandService/GetAllReports',
+      request,
+      metadata || {},
+      methodDescriptor_DisasterCommandService_GetAllReports);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.disaster.v1.ReportByIdRequest,
+ *   !proto.disaster.v1.DisasterReport>}
+ */
+const methodDescriptor_DisasterCommandService_GetReportById = new grpc.web.MethodDescriptor(
+  '/disaster.v1.DisasterCommandService/GetReportById',
+  grpc.web.MethodType.UNARY,
+  proto.disaster.v1.ReportByIdRequest,
+  proto.disaster.v1.DisasterReport,
+  /**
+   * @param {!proto.disaster.v1.ReportByIdRequest} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -98,97 +159,41 @@ const methodDescriptor_DisasterCommandService_SubscribeGlobalStream = new grpc.w
 
 
 /**
- * @param {!proto.disaster.v1.EmptyRequest} request The request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.disaster.v1.DisasterReport>}
- *     The XHR Node Readable Stream
- */
-proto.disaster.v1.DisasterCommandServiceClient.prototype.subscribeGlobalStream =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/disaster.v1.DisasterCommandService/SubscribeGlobalStream',
-      request,
-      metadata || {},
-      methodDescriptor_DisasterCommandService_SubscribeGlobalStream);
-};
-
-
-/**
- * @param {!proto.disaster.v1.EmptyRequest} request The request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.disaster.v1.DisasterReport>}
- *     The XHR Node Readable Stream
- */
-proto.disaster.v1.DisasterCommandServicePromiseClient.prototype.subscribeGlobalStream =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
-      '/disaster.v1.DisasterCommandService/SubscribeGlobalStream',
-      request,
-      metadata || {},
-      methodDescriptor_DisasterCommandService_SubscribeGlobalStream);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
- *   !proto.disaster.v1.DisasterReport,
- *   !proto.disaster.v1.PublishResponse>}
- */
-const methodDescriptor_DisasterCommandService_PublishManualReport = new grpc.web.MethodDescriptor(
-  '/disaster.v1.DisasterCommandService/PublishManualReport',
-  grpc.web.MethodType.UNARY,
-  proto.disaster.v1.DisasterReport,
-  proto.disaster.v1.PublishResponse,
-  /**
-   * @param {!proto.disaster.v1.DisasterReport} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.disaster.v1.PublishResponse.deserializeBinary
-);
-
-
-/**
- * @param {!proto.disaster.v1.DisasterReport} request The
+ * @param {!proto.disaster.v1.ReportByIdRequest} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.disaster.v1.PublishResponse)}
+ * @param {function(?grpc.web.RpcError, ?proto.disaster.v1.DisasterReport)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.disaster.v1.PublishResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.disaster.v1.DisasterReport>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.disaster.v1.DisasterCommandServiceClient.prototype.publishManualReport =
+proto.disaster.v1.DisasterCommandServiceClient.prototype.getReportById =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/disaster.v1.DisasterCommandService/PublishManualReport',
+      '/disaster.v1.DisasterCommandService/GetReportById',
       request,
       metadata || {},
-      methodDescriptor_DisasterCommandService_PublishManualReport,
+      methodDescriptor_DisasterCommandService_GetReportById,
       callback);
 };
 
 
 /**
- * @param {!proto.disaster.v1.DisasterReport} request The
+ * @param {!proto.disaster.v1.ReportByIdRequest} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.disaster.v1.PublishResponse>}
+ * @return {!Promise<!proto.disaster.v1.DisasterReport>}
  *     Promise that resolves to the response
  */
-proto.disaster.v1.DisasterCommandServicePromiseClient.prototype.publishManualReport =
+proto.disaster.v1.DisasterCommandServicePromiseClient.prototype.getReportById =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/disaster.v1.DisasterCommandService/PublishManualReport',
+      '/disaster.v1.DisasterCommandService/GetReportById',
       request,
       metadata || {},
-      methodDescriptor_DisasterCommandService_PublishManualReport);
+      methodDescriptor_DisasterCommandService_GetReportById);
 };
 
 
@@ -250,6 +255,67 @@ proto.disaster.v1.DisasterCommandServicePromiseClient.prototype.updateStatusPena
       request,
       metadata || {},
       methodDescriptor_DisasterCommandService_UpdateStatusPenanganan);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.disaster.v1.DeleteReportRequest,
+ *   !proto.disaster.v1.PublishResponse>}
+ */
+const methodDescriptor_DisasterCommandService_DeleteReport = new grpc.web.MethodDescriptor(
+  '/disaster.v1.DisasterCommandService/DeleteReport',
+  grpc.web.MethodType.UNARY,
+  proto.disaster.v1.DeleteReportRequest,
+  proto.disaster.v1.PublishResponse,
+  /**
+   * @param {!proto.disaster.v1.DeleteReportRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.disaster.v1.PublishResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.disaster.v1.DeleteReportRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.disaster.v1.PublishResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.disaster.v1.PublishResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.disaster.v1.DisasterCommandServiceClient.prototype.deleteReport =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/disaster.v1.DisasterCommandService/DeleteReport',
+      request,
+      metadata || {},
+      methodDescriptor_DisasterCommandService_DeleteReport,
+      callback);
+};
+
+
+/**
+ * @param {!proto.disaster.v1.DeleteReportRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.disaster.v1.PublishResponse>}
+ *     Promise that resolves to the response
+ */
+proto.disaster.v1.DisasterCommandServicePromiseClient.prototype.deleteReport =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/disaster.v1.DisasterCommandService/DeleteReport',
+      request,
+      metadata || {},
+      methodDescriptor_DisasterCommandService_DeleteReport);
 };
 
 

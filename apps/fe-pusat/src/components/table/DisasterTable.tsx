@@ -8,8 +8,10 @@
 import { memo, useState } from "react";
 
 import { useDisasterStore, selectAllReportsList } from "@store/useDisasterStore";
+import { useActivityStore } from "@store/useActivityStore";
 import { formatCoordinate } from "@utils/conversion/coordinateConversion";
 import { formatToShortTime } from "@utils/conversion/timeConversion";
+import { enumMap } from "@constants/stream.constants";
 
 
 
@@ -25,14 +27,21 @@ const DisasterTable = memo(() => {
 	const selectedReportId = useDisasterStore((state) => state.selectedReportId);
 	const setSelectedReportId = useDisasterStore((state) => state.setSelectedReportId);
 	const deleteReport = useDisasterStore((state) => state.deleteReport);
+	const isLoading = useDisasterStore((state) => state.isLoading);
+	const error = useDisasterStore((state) => state.error);
 	
 	const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
 	const selectedReport = selectedReportId ? reports.find((r) => r.id === selectedReportId) : null;
 
+	/** Cek apakah report sudah resolved berdasarkan enum. */
+	const isResolved = (penanganan: number) =>
+		penanganan === enumMap.statusPenanganan.STATUS_SUDAH_DIATASI ||
+		penanganan === enumMap.statusPenanganan.STATUS_GAGAL_TERATASI;
+
 	const sortedReports = [...reports].sort((a, b) => {
-		const aResolved = a.statusPenanganan === 2 || a.statusPenanganan === 3;
-		const bResolved = b.statusPenanganan === 2 || b.statusPenanganan === 3;
+		const aResolved = isResolved(a.statusPenanganan);
+		const bResolved = isResolved(b.statusPenanganan);
 		if (aResolved && !bResolved) return 1;
 		if (!aResolved && bResolved) return -1;
 		return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
@@ -40,7 +49,6 @@ const DisasterTable = memo(() => {
 
 	return (
 		<div className="bg-white rounded-xl border border-gray-200 shadow-sm flex-1">
-			{/* Table Header */}
 			<div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
 				<h2 className="text-base font-bold text-[#1a2332]">
 					Tabel Bencana Nasional
@@ -62,7 +70,6 @@ const DisasterTable = memo(() => {
 				</button>
 			</div>
 
-			{/* Table Content */}
 			<div className="overflow-x-auto">
 				<table className="w-full text-sm text-left">
 					<thead>
@@ -76,7 +83,31 @@ const DisasterTable = memo(() => {
 						</tr>
 					</thead>
 					<tbody>
-						{reports.length === 0 && (
+						{isLoading && (
+							<tr>
+								<td colSpan={6} className="px-5 py-10 text-center">
+									<div className="flex flex-col items-center gap-2">
+										<div className="h-6 w-6 animate-spin rounded-full border-3 border-gray-200 border-t-[#1a2332]"></div>
+										<span className="text-sm text-gray-400">Memuat data laporan...</span>
+									</div>
+								</td>
+							</tr>
+						)}
+						{!isLoading && error && (
+							<tr>
+								<td colSpan={6} className="px-5 py-8 text-center">
+									<div className="flex flex-col items-center gap-2 text-red-500">
+										<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+											<circle cx="12" cy="12" r="10" />
+											<line x1="12" y1="8" x2="12" y2="12" />
+											<line x1="12" y1="16" x2="12.01" y2="16" />
+										</svg>
+										<span className="text-sm font-medium">{error}</span>
+									</div>
+								</td>
+							</tr>
+						)}
+						{!isLoading && !error && reports.length === 0 && (
 							<tr>
 								<td
 									colSpan={6}
@@ -86,13 +117,13 @@ const DisasterTable = memo(() => {
 								</td>
 							</tr>
 						)}
-						{sortedReports.map((report) => {
-							const isResolved = report.statusPenanganan === 2 || report.statusPenanganan === 3;
+						{!isLoading && !error && sortedReports.map((report) => {
+							const reportResolved = isResolved(report.statusPenanganan);
 
 							return (
 								<tr
 									key={report.id}
-									className={`border-b border-gray-50 transition-colors cursor-pointer ${isResolved ? "bg-gray-200 hover:bg-gray-200" : "hover:bg-gray-50/70"}`}
+									className={`border-b border-gray-50 transition-colors cursor-pointer ${reportResolved ? "bg-gray-200 hover:bg-gray-200" : "hover:bg-gray-50/70"}`}
 									onClick={() => setSelectedReportId(report.id)}
 								>
 									<td className="px-5 py-4 font-medium text-surface-dark max-w-[160px]">
@@ -125,7 +156,7 @@ const DisasterTable = memo(() => {
 									</td>
 									<td className="px-5 py-4 text-center">
 										<div className="flex items-center justify-center gap-2">
-											{/* Delete */}
+											
 											<button
 												className="text-gray-400 hover:text-red-600 transition-colors p-1 rounded hover:bg-red-50"
 												onClick={(e) => {
@@ -155,7 +186,7 @@ const DisasterTable = memo(() => {
 				</table>
 			</div>
 
-			{/* Modal Detail */}
+			
 			{selectedReport && (
 				<ReportDetailModal
 					report={selectedReport}
@@ -163,7 +194,7 @@ const DisasterTable = memo(() => {
 				/>
 			)}
 
-			{/* Modal Konfirmasi Hapus */}
+			
 			{confirmDeleteId && (
 				<Modal
 					isOpen={true}
@@ -186,7 +217,24 @@ const DisasterTable = memo(() => {
 							<Button color="neutral" variant="outline" onClick={() => setConfirmDeleteId(null)} className="flex-1 font-bold tracking-widest py-3">
 								Batal
 							</Button>
-							<Button color="error" onClick={() => { deleteReport(confirmDeleteId); setConfirmDeleteId(null); }} className="flex-1 font-bold tracking-widest py-3">
+							<Button color="error" onClick={() => { 
+								const reportToDelete = reports.find(r => r.id === confirmDeleteId);
+								deleteReport(confirmDeleteId); 
+								
+								if (reportToDelete) {
+									const appendLog = useActivityStore.getState().appendLog;
+									appendLog({
+										id: `log-del-${confirmDeleteId}-${Date.now()}`,
+										time: new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) + " WIB",
+										date: new Date().toISOString().split('T')[0],
+										title: "Laporan Dihapus",
+										description: `Operator (Pusat) telah menghapus laporan dari ${reportToDelete.sourceName}.`,
+										type: "danger"
+									});
+								}
+								
+								setConfirmDeleteId(null); 
+							}} className="flex-1 font-bold tracking-widest py-3">
 								Hapus
 							</Button>
 						</div>

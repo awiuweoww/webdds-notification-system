@@ -21,12 +21,13 @@ const defineConfigResult = defineConfig([
 			".storybook",
 			"**/*.config.*",
 			"jest.setup.ts",
-			"src/utils/api",
 			"coverage",
 			"jest.setup.js",
 			"**/*.test.{js,ts,tsx}",
 			"src-tauri",
-			"__mocks__"
+			"__mocks__",
+			"shared/gen/**",
+			"server/**"
 		]
 	},
 	{

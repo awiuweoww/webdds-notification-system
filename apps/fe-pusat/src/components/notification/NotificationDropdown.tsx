@@ -7,6 +7,7 @@
  */
 import { memo, useRef, useEffect } from "react";
 import { useDisasterStore, selectUnreadReportsList } from "@store/useDisasterStore";
+import { enumMap } from "@constants/stream.constants";
 
 interface NotificationDropdownProps {
     show: boolean;
@@ -65,9 +66,9 @@ const NotificationDropdown = memo(({ show, onClose }: NotificationDropdownProps)
                     <div className="p-6 text-center text-sm text-gray-400">Belum ada notifikasi baru.</div>
                 )}
                 {latestReports.map((report) => {
-                    const isDanger = report.statusLevel === 2; // BAHAYA
-                    const isWarning = report.statusLevel === 1; // WASPADA
-                    const isResolved = report.statusPenanganan === 2 || report.statusPenanganan === 3;
+                    const isDanger = report.statusLevel === enumMap.levelBencana.LEVEL_SIAGA || report.statusLevel === enumMap.levelBencana.LEVEL_AWAS;
+                    const isWarning = report.statusLevel === enumMap.levelBencana.LEVEL_WASPADA;
+                    const isResolved = report.statusPenanganan === enumMap.statusPenanganan.STATUS_SUDAH_DIATASI || report.statusPenanganan === enumMap.statusPenanganan.STATUS_GAGAL_TERATASI;
                     
                     let bgClass = "bg-white hover:bg-gray-50";
                     let iconBg = "bg-neutral-2";
