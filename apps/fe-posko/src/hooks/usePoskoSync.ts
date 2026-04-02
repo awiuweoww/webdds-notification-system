@@ -16,7 +16,7 @@ import * as webddsService from "../utils/api/disaster.webdds";
 import { WEBDDS_TOPICS } from "../utils/api/disaster.webdds";
 
 /** Status koneksi WebDDS yang bisa ditampilkan di UI. */
-type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error" | "simulation";
+type ConnectionStatus = "connecting" | "connected" | "disconnected" | "error";
 
 
 /** ID Identitas Posko Lokal. */
@@ -68,13 +68,6 @@ export function usePoskoSync(): { connectionStatus: ConnectionStatus } {
 		};
 	}, []);
 
-	/** Cek apakah sedang dalam mode simulasi  */
-	useEffect(() => {
-		const status = webddsService.getConnectionStatus();
-		if (status === "simulation") {
-			setConnectionStatus("simulation");
-		}
-	}, []);
 
 	return { connectionStatus };
 }

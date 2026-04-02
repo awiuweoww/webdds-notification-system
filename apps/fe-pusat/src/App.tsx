@@ -16,7 +16,6 @@ import Navbar from "@component/layout/Navbar";
 import DisasterTable from "@component/table/DisasterTable";
 
 import { useDisasterSync } from "./hooks/useDisasterSync";
-import { useDummyData } from "./hooks/useDummyData";
 import { useDisasterStore } from "./store/useDisasterStore";
 
 /**
@@ -25,7 +24,6 @@ import { useDisasterStore } from "./store/useDisasterStore";
  * @returns Komponen aplikasi yang telah dirender.
  */
 export default function App() {
-	const { handleSeedDummyData } = useDummyData();
 	const dangerAlert = useDisasterStore((s) => s.dangerAlert);
 	const setDangerAlert = useDisasterStore((s) => s.setDangerAlert);
 	const setSelectedReportId = useDisasterStore((s) => s.setSelectedReportId);
@@ -60,14 +58,6 @@ export default function App() {
 			<main className="flex-1 px-6 py-6 max-w-[1280px] mx-auto w-full">
 				<DashboardHeader />
 				<SummaryCards />
-				<div className="mb-4">
-					<button
-						onClick={handleSeedDummyData}
-						className="px-4 py-2 bg-[#1a2332] text-white text-xs font-semibold rounded-lg hover:bg-[#2c3e50] transition-colors"
-					>
-						🚀 Simulasi Data Masuk (Demo)
-					</button>
-				</div>
 				<div className="flex flex-col lg:flex-row gap-5">
 					<DisasterTable />
 					<ActivityLog />

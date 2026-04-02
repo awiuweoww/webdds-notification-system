@@ -24,8 +24,8 @@
  */
 const WEBDDS_BROKER_URL = "ws://localhost:8081";
 
-/** Flag apakah sedang dalam mode simulasi. */
-const IS_SIMULATION = !WEBDDS_BROKER_URL;
+/** Flag apakah sedang dalam mode simulasi (dimatikan). */
+const IS_SIMULATION = false;
 
 
 export const WEBDDS_TOPICS = {
@@ -72,10 +72,8 @@ const subscriberConfigs = new Map<string, { filter?: { field: string; value: str
 export function connect(onStatus?: OnStatusCallback): void {
 	if (onStatus) statusCallback = onStatus;
 
-	if (IS_SIMULATION) {
-		console.log("[WebDDS Posko Simulasi] Mode simulasi aktif.");
-		statusCallback?.("connected");
-		return;
+	if (isIntentionalDisconnect) {
+		isIntentionalDisconnect = false;
 	}
 
 	isIntentionalDisconnect = false;
@@ -146,13 +144,6 @@ export function connect(onStatus?: OnStatusCallback): void {
  * @returns Hasil publish (sukses/gagal + pesan).
  */
 export async function publish(topic: string, data: unknown): Promise<PublishResult> {
-	if (IS_SIMULATION) {
-		console.log(`[WebDDS Posko Simulasi] Publish ke "${topic}":`, data);
-		return {
-			success: true,
-			message: "[Simulasi] Laporan berhasil dikirim via WebDDS."
-		};
-	}
 
 	if (!wsConnection || wsConnection.readyState !== WebSocket.OPEN) {
 		return {
@@ -237,8 +228,7 @@ export function disconnect(): void {
  *
  * @returns Status koneksi.
  */
-export function getConnectionStatus(): "connected" | "disconnected" | "simulation" {
-	if (IS_SIMULATION) return "simulation";
+export function getConnectionStatus(): "connected" | "disconnected" {
 	if (wsConnection && wsConnection.readyState === WebSocket.OPEN) return "connected";
 	return "disconnected";
 }
