@@ -59,14 +59,14 @@ export default function MainForm() {
 				</p>
 			</div>
 
-			<form className="flex flex-col gap-[28px]" onSubmit={handleSubmit}>
+			<form className="flex flex-col gap-[28px]" onSubmit={(e) => { void handleSubmit(e); }}>
 				<div className="flex flex-col gap-2.5">
 					<label className="text-[11px] font-bold tracking-[0.15em] text-[#475569] uppercase">
 						JENIS BENCANA
 					</label>
 					<div className="relative">
 						<select
-							className="h-[52px] w-full border border-[#cbd5e1] rounded-sm px-4 text-[13px] font-medium text-[#334155] focus:outline-none focus:border-[#64748b] bg-white shadow-sm appearance-none cursor-pointer"
+							className="h-[52px] w-full border border-[#cbd5e1] rounded-none px-4 text-[13px] font-medium text-[#334155] focus:outline-none focus:border-[#64748b] bg-white shadow-sm appearance-none cursor-pointer"
 							value={jenisBencana}
 							onChange={(e) => setJenisBencana(e.target.value)}
 						>
@@ -111,7 +111,7 @@ export default function MainForm() {
 									onChange={latCoord.onChange}
 									onFocus={latCoord.onFocus}
 									onBlur={latCoord.onBlur}
-									className="h-[52px] w-full border border-[#cbd5e1] rounded-sm pl-11 pr-4 text-[13px] font-medium text-[#334155] focus:outline-none focus:border-[#64748b] bg-white shadow-sm"
+									className="h-[52px] w-full border border-[#cbd5e1] rounded-none pl-11 pr-4 text-[13px] font-medium text-[#334155] focus:outline-none focus:border-[#64748b] bg-white shadow-sm"
 									placeholder="Contoh: -6.1751"
 								/>
 							</div>
@@ -130,14 +130,14 @@ export default function MainForm() {
 									onChange={lngCoord.onChange}
 									onFocus={lngCoord.onFocus}
 									onBlur={lngCoord.onBlur}
-									className="h-[52px] w-full border border-[#cbd5e1] rounded-sm pl-11 pr-4 text-[13px] font-medium text-[#334155] focus:outline-none focus:border-[#64748b] bg-white shadow-sm"
+									className="h-[52px] w-full border border-[#cbd5e1] rounded-none pl-11 pr-4 text-[13px] font-medium text-[#334155] focus:outline-none focus:border-[#64748b] bg-white shadow-sm"
 									placeholder="Contoh: 106.8272"
 								/>
 							</div>
 						</div>
 					</div>
 					{latCoord.value && lngCoord.value && (
-						<div className="px-3 py-2 bg-[#f8fafc] border border-[#e2e8f0] rounded-sm mt-1 text-[11px] text-[#64748b] font-medium tracking-wide flex items-center justify-between">
+						<div className="px-3 py-2 bg-[#f8fafc] border border-[#e2e8f0] rounded-none mt-1 text-[11px] text-[#64748b] font-medium tracking-wide flex items-center justify-between">
 							<span>Koordinat Preview:</span>
 							<span className="font-bold text-[#334155]">{formattedCoord}</span>
 						</div>
@@ -150,7 +150,7 @@ export default function MainForm() {
 					</label>
 					<div className="relative">
 						<div
-							className={`h-[52px] w-full border ${isStatusOpen ? "border-[#64748b]" : "border-[#cbd5e1]"} rounded-sm px-4 text-[13px] font-bold bg-white shadow-sm cursor-pointer flex items-center justify-between ${getStatusColor(statusLevel)}`}
+							className={`h-[52px] w-full border ${isStatusOpen ? "border-[#64748b]" : "border-[#cbd5e1]"} rounded-none px-4 text-[13px] font-bold bg-white shadow-sm cursor-pointer flex items-center justify-between ${getStatusColor(statusLevel)}`}
 							onClick={toggleStatusOpen}
 						>
 							{statusLevel}
@@ -179,7 +179,7 @@ export default function MainForm() {
 									className="fixed inset-0 z-40"
 									onClick={closeStatusDropdown}
 								/>
-								<div className="absolute top-[100%] left-0 w-full mt-1 bg-white border border-[#cbd5e1] rounded-sm shadow-lg z-50 overflow-hidden">
+								<div className="absolute top-[100%] left-0 w-full mt-1 bg-white border border-[#cbd5e1] rounded-none shadow-lg z-50 overflow-hidden">
 									{[
 										{
 											value: "Level 1: Normal / Aman",
@@ -238,7 +238,7 @@ export default function MainForm() {
 						DETAIL LAPORAN OBSERVASI
 					</label>
 					<textarea
-						className="w-full min-h-[160px] border border-[#cbd5e1] rounded-sm p-4 text-[13px] font-medium text-[#334155] focus:outline-none focus:border-[#64748b] bg-white shadow-sm resize-y leading-relaxed placeholder:text-[#94a3b8]"
+						className="w-full min-h-[160px] border border-[#cbd5e1] rounded-none p-4 text-[13px] font-medium text-[#334155] focus:outline-none focus:border-[#64748b] bg-white shadow-sm resize-y leading-relaxed placeholder:text-[#94a3b8]"
 						placeholder="Tuliskan temuan mendetail di lapangan, anomali yang ditemukan, atau tindakan awal yang telah dilakukan..."
 						value={detail}
 						onChange={(e) => setDetail(e.target.value)}
@@ -249,7 +249,7 @@ export default function MainForm() {
 					<button
 						type="submit"
 						disabled={!isFormComplete}
-						className={`flex-1 h-[52px] rounded-sm flex items-center justify-center gap-2.5 font-bold tracking-[0.05em] transition-all shadow-sm text-[13px] ${
+						className={`flex-1 h-[52px] rounded-none flex items-center justify-center gap-2.5 font-bold tracking-[0.05em] transition-all shadow-sm text-[13px] ${
 							isFormComplete
 								? "bg-surface-dark text-white hover:bg-slate-800"
 								: "bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-100"
@@ -266,7 +266,7 @@ export default function MainForm() {
 					<button
 						type="button"
 						onClick={handleReset}
-						className="w-40 bg-white border border-[#cbd5e1] text-[#334155] font-bold tracking-[0.05em] h-[52px] rounded-sm hover:bg-[#f8fafc] transition-colors shadow-sm text-[13px]"
+						className="w-40 bg-white border border-[#cbd5e1] text-[#334155] font-bold tracking-[0.05em] h-[52px] rounded-none hover:bg-[#f8fafc] transition-colors shadow-sm text-[13px]"
 					>
 						BATALKAN
 					</button>
@@ -319,7 +319,7 @@ export default function MainForm() {
 			</div>
 
 			<div
-				className={`fixed bottom-8 right-8 bg-[#22c55e] text-white px-5 py-4 rounded-sm shadow-xl flex items-center gap-3.5 transition-all duration-400 transform z-50 ${showSuccess ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0 pointer-events-none"}`}
+				className={`fixed bottom-8 right-8 bg-[#22c55e] text-white px-5 py-4 rounded-none shadow-xl flex items-center gap-3.5 transition-all duration-400 transform z-50 ${showSuccess ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0 pointer-events-none"}`}
 			>
 				<ShieldCheck size={22} strokeWidth={2.5} className="text-white" />
 				<div>

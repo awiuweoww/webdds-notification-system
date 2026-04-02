@@ -19,49 +19,29 @@
  */
 
 
-/**
- * URL WebDDS Broker (WebSocket server).
- */
 const WEBDDS_BROKER_URL = "ws://localhost:8081";
 
-/** Flag apakah sedang dalam mode simulasi (dimatikan). */
 const IS_SIMULATION = false;
 
 
 export const WEBDDS_TOPICS = {
-	/** Topik untuk mengirim laporan manual ke Pusat dan BE. */
 	DISASTER_REPORTS: "disaster-reports",
-
-	/** Topik untuk menerima update status dari Pusat. */
 	STATUS_UPDATES: "status-updates",
 } as const;
 
-/** Callback saat status koneksi berubah. */
-type OnStatusCallback = (status: "connected" | "disconnected" | "error") => void;
 
-/** Callback untuk menerima data dari topik yang di-subscribe. */
+type OnStatusCallback = (status: "connected" | "disconnected" | "error") => void;
 type OnMessageCallback = (data: unknown) => void;
 
-/** Hasil dari operasi publish. */
 export interface PublishResult {
 	success: boolean;
 	message: string;
 }
 
-
-/** Koneksi WebSocket aktif. */
 let wsConnection: WebSocket | null = null;
-
-/** Callback status koneksi. */
 let statusCallback: OnStatusCallback | null = null;
-
-/** Daftar subscriber per topik (untuk menerima status-updates dari Pusat). */
 const subscribers = new Map<string, Set<OnMessageCallback>>();
-
-/** Flag mencegah auto-reconnect saat unmount di React. */
 let isIntentionalDisconnect = false;
-
-/** Konfigurasi filter per topik. */
 const subscriberConfigs = new Map<string, { filter?: { field: string; value: string } }>();
 
 
@@ -184,7 +164,6 @@ export function subscribe(topic: string, callback: OnMessageCallback, filter?: {
 
 	console.log(`[WebDDS Posko] Subscribe ke topik: "${topic}" ${filter ? `[Filter: ${filter.field}=${filter.value}]` : ""}`);
 
-	// Kirim ulang sub ke broker jika koneksi sudah ada
 	if (wsConnection && wsConnection.readyState === WebSocket.OPEN) {
 		wsConnection.send(JSON.stringify({
 			action: "subscribe",

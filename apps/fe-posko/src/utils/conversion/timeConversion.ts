@@ -13,8 +13,6 @@ export const formatToShortTime = (timestamp: string | number): string => {
 	if (!timestamp) return "-";
 	try {
 		const date = new Date(timestamp);
-		
-		// Periksa apakah date valid
 		if (isNaN(date.getTime())) return "-";
 
 		return date.toLocaleTimeString("en-US", {

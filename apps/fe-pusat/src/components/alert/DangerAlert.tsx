@@ -25,9 +25,11 @@ const DangerAlert = memo(
 		}, []);
 
 
+
 /**
- * Menghilangkan notifikasi DangerAlert dan memanggil fungsi onDismiss setelah 200ms.
- * Fungsi ini digunakan ketika tombol "Tutup" ditekan.
+ * Mengatur visibility DangerAlert menjadi false dan memanggil fungsi onDismiss
+ * setelah 200ms. Fungsi ini digunakan untuk mengatur keadaan tombol dismiss
+ * di klik.
  */
 		const handleDismiss = () => {
 			setIsVisible(false);

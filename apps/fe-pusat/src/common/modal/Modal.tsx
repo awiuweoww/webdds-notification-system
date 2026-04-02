@@ -25,6 +25,12 @@ interface ModalProps extends Omit<HTMLAttributes<HTMLDivElement>, "title" | "col
 
 // --- Icons ---
 
+/**
+ * Ikon X untuk tombol tutup modal.
+ * @param {Object} props - Properti komponen.
+ * @param {string} [props.className] - Kelas CSS tambahan.
+ * @returns {JSX.Element} Elemen SVG ikon X.
+ */
 const XIcon = ({ className }: { className?: string }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -43,8 +49,13 @@ const XIcon = ({ className }: { className?: string }) => (
     </svg>
 );
 
-// --- Component ---
-
+/**
+ * Komponen Modal utama untuk fe-pusat.
+ * Mendukung berbagai ukuran, overlay blur, dan penanganan keyboard ESC.
+ *
+ * @param {ModalProps} props - Properti untuk komponen Modal.
+ * @returns {JSX.Element | null} Elemen modal yang dirender atau null jika tidak terbuka.
+ */
 const Modal: FC<ModalProps> = ({
     isOpen,
     onClose,
@@ -60,8 +71,18 @@ const Modal: FC<ModalProps> = ({
     const overlayRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
 
-    // Handle ESC key press
+    /**
+     * Menangani penekanan tombol keyboard.
+     * Menutup modal saat tombol Escape ditekan.
+     * @param {KeyboardEvent} event - Objek event keyboard.
+     * @returns {void}
+     */
     useEffect(() => {
+        /**
+         * Fungsi internal untuk menangani navigasi keyboard Escape.
+         * @param {KeyboardEvent} event - Event keyboard asli dari browser.
+         * @returns {void}
+         */
         const handleKeyDown = (event: KeyboardEvent) => {
             if (isOpen && event.key === "Escape") {
                 onClose();
@@ -70,18 +91,21 @@ const Modal: FC<ModalProps> = ({
 
         if (isOpen) {
             document.addEventListener("keydown", handleKeyDown);
-            // Prevent scrolling on body when modal is open
             document.body.style.overflow = "hidden";
         }
 
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
-            // Restore scrolling on body
             document.body.style.overflow = "unset";
         };
     }, [isOpen, onClose]);
 
-    // Handle click outside
+    /**
+     * Menangani klik pada overlay (latar belakang).
+     * Menutup modal jika area di luar konten diklik.
+     * @param {React.MouseEvent} e - Objek event mouse.
+     * @returns {void}
+     */
     const handleOverlayClick = (e: React.MouseEvent) => {
         if (overlayRef.current === e.target) {
             onClose();
@@ -90,6 +114,7 @@ const Modal: FC<ModalProps> = ({
 
     if (!isOpen) return null;
 
+    /** Pemetaan ukuran modal ke kelas CSS Tailwind. */
     const sizeClasses = {
         sm: "max-w-sm",
         md: "max-w-md",
@@ -109,7 +134,7 @@ const Modal: FC<ModalProps> = ({
                 role="dialog"
                 aria-modal="true"
                 className={cn(
-                    "relative w-full overflow-hidden rounded-xl bg-white text-neutral-900 shadow-lg ring-1 ring-neutral-950/5 dark:bg-neutral-950 dark:text-neutral-100 dark:ring-neutral-800 font-montserrat flex flex-col max-h-[90vh]",
+                    "relative w-full overflow-hidden rounded-none bg-white text-neutral-900 shadow-lg ring-1 ring-neutral-950/5 dark:bg-neutral-950 dark:text-neutral-100 dark:ring-neutral-800 font-montserrat flex flex-col max-h-[90vh]",
                     "animate-in zoom-in-95 duration-200",
                     sizeClasses[size],
                     className
@@ -131,7 +156,7 @@ const Modal: FC<ModalProps> = ({
                         )}
                         <button
                             onClick={onClose}
-                            className={cn("absolute right-4 top-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2", 
+                            className={cn("absolute right-4 top-4 rounded-none opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2", 
                                 headerClassName ? "text-white" : "text-neutral-500")}
                         >
                             <XIcon className="h-4 w-4" />

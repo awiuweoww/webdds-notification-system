@@ -73,7 +73,6 @@ export const useDisasterForm = () => {
 
 			const statusLevelNum = STATUS_LEVEL_MAP[statusLevel] ?? 0;
 
-			/** Membangun objek DisasterReport */
 			const report = {
 				id: `MANUAL-POSKO-BDG-${statusLevelNum}`,
 				originId: "POSKO-BDG-01",
@@ -87,13 +86,12 @@ export const useDisasterForm = () => {
 				timestamp: new Date().toISOString()
 			};
 
-			/** Publish ke WebDDS topic "disaster-reports" */
+			
 			const result = await webddsService.publish(
 				WEBDDS_TOPICS.DISASTER_REPORTS,
 				report
 			);
 
-			/** Catat hasil ke Activity Log */
 			const appendLog = useActivityStore.getState().appendLog;
 			appendLog({
 				id: `log-${Date.now()}`,
@@ -131,7 +129,6 @@ export const useDisasterForm = () => {
 		setIsStatusOpen(false);
 	}, []);
 
-	/** Koordinat yang sudah diformat untuk preview. */
 	const formattedCoord = formatCoordinate(latCoord.value, lngCoord.value);
 
 	return {

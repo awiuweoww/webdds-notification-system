@@ -46,7 +46,7 @@ const StatusBadge = memo(({ level, timestamp }: StatusBadgeProps) => {
 		<div className="flex flex-col items-center gap-1">
 			<span
 				className={cn(
-					"px-3 py-1 rounded-md text-[11px] font-bold tracking-wide",
+					"px-3 py-1 rounded-none text-[11px] font-bold tracking-wide w-[100px] text-center",
 					className
 				)}
 			>

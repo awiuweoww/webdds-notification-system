@@ -4,29 +4,6 @@
  *                      Menjadi satu-satunya "pintu masuk" bagi komponen UI
  *                      untuk berkomunikasi dengan backend dan menerima data real-time.
  *
- * Arsitektur:
- *   ┌─────────────────────────────────────────────────────┐
- *   │                useDisasterSync (Hook ini)           │
- *   │                                                     │
- *   │  ┌──────────────────┐    ┌────────────────────┐     │
- *   │  │  disaster.grpc   │    │  disaster.webdds   │     │
- *   │  │  (Request/Res)   │    │  (Pub/Sub)         │     │
- *   │  └────────┬─────────┘    └─────────┬──────────┘     │
- *   │           │                        │                │
- *   │           └──── useDisasterStore ──┘                │
- *   │                  (Sumber Kebenaran)                  │
- *   └─────────────────────────────────────────────────────┘
- *
- * Cara Pakai:
- *   Cukup panggil sekali di komponen root (App.tsx):
- *
- *   ```tsx
- *   function App() {
- *     const { connectionStatus } = useDisasterSync();
- *     // ... render UI ...
- *   }
- *   ```
- *
  * Changelog:
  *   - 0.1.0 (31-03-2026): Implementasi awal.
  */

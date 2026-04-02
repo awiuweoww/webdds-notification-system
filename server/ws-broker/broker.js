@@ -42,7 +42,6 @@ function decodeFrame(buffer) {
 		offset = 4;
 	} else if (payloadLength === 127) {
 		if (buffer.length < 10) return "";
-		// Simplified: read as regular number (fine for < 2GB)
 		payloadLength = buffer.readUInt32BE(6);
 		offset = 10;
 	}
@@ -136,31 +135,6 @@ function handleMessage(socket, info, raw) {
 	}
 }
 
-// --- Sensor Simulator ---
-var SENSORS = [
-	{
-		id: "STREAM-MERAPI-01",
-		sourceName: "Gunung Merapi",
-		lat: "-7.5407",
-		lng: "110.4457",
-		type: "Erupsi Gunung"
-	},
-	{
-		id: "STREAM-SEMERU-01",
-		sourceName: "Gunung Semeru",
-		lat: "-8.1077",
-		lng: "112.9224",
-		type: "Erupsi Gunung"
-	},
-	{
-		id: "STREAM-CITARUM-01",
-		sourceName: "Sungai Citarum",
-		lat: "-6.7322",
-		lng: "107.6349",
-		type: "Banjir"
-	}
-];
-
 function publishSensor() {
 	var s = SENSORS[Math.floor(Math.random() * SENSORS.length)];
 	var rand = Math.random();
@@ -184,7 +158,6 @@ function publishSensor() {
 	relayToSubscribers("sensor-stream", report);
 }
 
-// --- HTTP Server + WS Upgrade ---
 var server = http.createServer(function (req, res) {
 	res.writeHead(200, { "Content-Type": "text/plain" });
 	res.end("WebDDS Broker OK");

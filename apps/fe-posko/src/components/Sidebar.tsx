@@ -9,19 +9,9 @@
 import React from "react";
 
 import { useActivityStore } from "../store/useActivityStore";
-import type { DashboardLog } from "../store/useActivityStore";
+import { statusColorMap } from "../constants/colors.constant";
 
-/** Mapping statusType ke warna tag dan border. */
-const statusColorMap: Record<
-	DashboardLog["statusType"],
-	{ tagColor: string; borderColor: string }
-> = {
-	success: { tagColor: "bg-[#22c55e]", borderColor: "border-[#22c55e]" },
-	warning: { tagColor: "bg-[#f59e0b]", borderColor: "border-[#f59e0b]" },
-	danger: { tagColor: "bg-[#ef4444]", borderColor: "border-[#ef4444]" },
-	neutral: { tagColor: "bg-[#94a3b8]", borderColor: "border-[#94a3b8]" },
-	system: { tagColor: "bg-[#64748b]", borderColor: "border-[#64748b]" }
-};
+
 
 /**
  * Komponen Sidebar untuk log aktivitas regional.

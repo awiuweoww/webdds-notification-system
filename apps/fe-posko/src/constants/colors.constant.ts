@@ -31,3 +31,12 @@ export const bgColor = {
 	off: "bg-neutral-2",
 	neutral: "bg-neutral-1"
 };
+
+/** Mapping warna label dan border berdasarkan tipe status log. */
+export const statusColorMap = {
+	success: { tagColor: "bg-[#22c55e]", borderColor: "border-[#22c55e]" },
+	warning: { tagColor: "bg-[#f59e0b]", borderColor: "border-[#f59e0b]" },
+	danger: { tagColor: "bg-[#ef4444]", borderColor: "border-[#ef4444]" },
+	neutral: { tagColor: "bg-[#94a3b8]", borderColor: "border-[#94a3b8]" },
+	system: { tagColor: "bg-[#64748b]", borderColor: "border-[#64748b]" }
+};

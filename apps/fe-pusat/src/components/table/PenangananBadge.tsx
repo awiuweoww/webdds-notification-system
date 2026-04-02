@@ -42,7 +42,7 @@ const PenangananBadge = memo(({ status, timestamp }: PenangananBadgeProps) => {
 		<div className="flex flex-col items-center gap-1">
 			<span
 				className={cn(
-					"px-2.5 py-1.5 rounded-md text-[10px] font-bold tracking-wide border w-[130px] text-center whitespace-nowrap",
+					"px-2.5 py-1.5 rounded-none text-[10px] font-bold tracking-wide border w-[130px] text-center whitespace-nowrap",
 					item.className
 				)}
 			>

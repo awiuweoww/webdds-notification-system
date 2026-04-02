@@ -89,7 +89,7 @@ export const Button = memo(
                     type={type}
                     data-testid={dataTestId}
                     className={cn(
-                        "group inline-flex items-center justify-center rounded-lg font-medium transition-all select-none font-montserrat",
+                        "group inline-flex items-center justify-center rounded-none font-medium transition-all select-none font-montserrat",
                         // Gaya dasar
                         sizeStyles[size],
                         buttonBaseStyles[variant]?.[color],

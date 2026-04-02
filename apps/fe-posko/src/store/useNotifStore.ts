@@ -15,7 +15,6 @@
  */
 import { create } from "zustand";
 
-/** Satu item notifikasi dari Pusat. */
 export interface PusatNotification {
 	id: string;
 	reportId?: string;
@@ -26,19 +25,16 @@ export interface PusatNotification {
 	isRead: boolean;
 }
 
-/** State store notifikasi. */
 export interface NotifStoreState {
 	notifications: PusatNotification[];
 	unreadCount: number;
 
-	/** Menambahkan notifikasi baru dari Pusat. Notifikasi baru selalu masuk sebagai belum dibaca. */
 	addNotification: (notif: Omit<PusatNotification, "isRead">) => void;
 	markAsRead: (id: string) => void;
 	markAllAsRead: () => void;
 	clearAll: () => void;
 }
 
-/**Store notifikasi */
 export const useNotifStore = create<NotifStoreState>((set) => ({
 	notifications: [],
 	unreadCount: 0,
@@ -51,8 +47,6 @@ export const useNotifStore = create<NotifStoreState>((set) => ({
 	 */
 	addNotification: (notif) =>
 		set((state) => {
-			// Cegah duplikat total (pesan yang sama UNTUK laporan yang sama)
-			// Ini mengizinkan pesan "Sudah Diatasi" muncul berkali-kali asal reportId-nya berbeda
 			const isDuplicate = state.notifications.some(
 				(n) => n.description === notif.description && n.title === notif.title && n.reportId === notif.reportId
 			);

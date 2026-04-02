@@ -22,7 +22,7 @@ import { useNotification } from "../hooks/useNotification";
 import { useNotifStore } from "../store/useNotifStore";
 import type { PusatNotification } from "../store/useNotifStore";
 
-/** Mapping tipe notifikasi ke ikon dan warna. */
+
 const notifStyle: Record<
 	PusatNotification["type"],
 	{ color: string; Icon: React.ElementType }
@@ -52,7 +52,7 @@ function NotificationItem({
 		<button
 			type="button"
 			onClick={onClick}
-			className={`w-full text-left flex items-start gap-3 p-3 rounded-md transition-colors ${notif.isRead ? "opacity-60" : "hover:bg-gray-50"}`}
+			className={`w-full text-left flex items-start gap-3 p-3 rounded-none transition-colors ${notif.isRead ? "opacity-60" : "hover:bg-gray-50"}`}
 		>
 			<IconComp size={16} className={`${style.color} mt-0.5 shrink-0`} />
 			<div className="flex-1">
@@ -81,7 +81,7 @@ export default function Header() {
 		null
 	);
 
-	/**  Baca dari store notifikasi (khusus respons Pusat). */
+
 	const notifications = useNotifStore((s) => s.notifications);
 	const unreadCount = useNotifStore((s) => s.unreadCount);
 	const markAsRead = useNotifStore((s) => s.markAsRead);
@@ -139,7 +139,7 @@ export default function Header() {
 					</button>
 
 					{showNotifications && (
-						<div className="absolute right-0 top-12 w-80 bg-white border border-gray-200 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-md overflow-hidden pb-2">
+						<div className="absolute right-0 top-12 w-80 bg-white border border-gray-200 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-none overflow-hidden pb-2">
 							<div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
 								<h3 className="text-[11px] font-bold text-gray-800 tracking-wider">
 									RESPONS PUSAT
@@ -196,7 +196,7 @@ export default function Header() {
 					}
 				>
 					<div className="flex flex-col gap-5 pt-2">
-						<div className="bg-gray-50 border border-gray-100 rounded-md p-5 text-sm">
+						<div className="bg-gray-50 border border-gray-100 rounded-none p-5 text-sm">
 							<div className="mb-4 text-center">
 								{(() => {
 									const style =
@@ -227,7 +227,7 @@ export default function Header() {
 						<button
 							type="button"
 							onClick={() => setSelectedNotif(null)}
-							className="w-full h-11 bg-white border border-gray-300 text-gray-700 font-bold uppercase tracking-widest text-[11px] rounded transition-colors hover:bg-gray-50"
+							className="w-full h-11 bg-white border border-gray-300 text-gray-700 font-bold uppercase tracking-widest text-[11px] rounded-none transition-colors hover:bg-gray-50"
 						>
 							Tutup
 						</button>

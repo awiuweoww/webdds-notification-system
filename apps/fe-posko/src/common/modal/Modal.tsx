@@ -23,6 +23,12 @@ interface ModalProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
 
 // --- Ikon ---
 
+/**
+ * Ikon X untuk tombol tutup modal.
+ * @param {Object} props - Properti komponen.
+ * @param {string} [props.className] - Kelas CSS tambahan.
+ * @returns {JSX.Element} Elemen SVG ikon X.
+ */
 const XIcon = ({ className }: { className?: string }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -43,6 +49,15 @@ const XIcon = ({ className }: { className?: string }) => (
 
 // --- Komponen ---
 
+/**
+ * Komponen Modal untuk menampilkan konten yang berisi diatas sebuah overlay.
+ * @param {ModalProps} props - Properti komponen.
+ * @returns {JSX.Element | null} Elemen modal yang dirender atau null jika tidak terbuka.
+ * @example
+ * <Modal isOpen={true} onClose={() => console.log("Modal closed")} title="Judul Bencana">
+ *   <p>Contoh isi modal</p>
+ * </Modal>
+ */
 const Modal: FC<ModalProps> = ({
     isOpen,
     onClose,
@@ -60,6 +75,11 @@ const Modal: FC<ModalProps> = ({
 
     // Menangani penekanan tombol ESC
     useEffect(() => {
+        /**
+         * Menangani penekanan tombol keyboard Escape.
+         * Saat tombol Escape ditekan, maka modal akan ditutup.
+         * @param {KeyboardEvent} event - Event keyboard asli dari browser.
+         */
         const handleKeyDown = (event: KeyboardEvent) => {
             if (isOpen && event.key === "Escape") {
                 onClose();
@@ -79,7 +99,12 @@ const Modal: FC<ModalProps> = ({
         };
     }, [isOpen, onClose]);
 
-    // Menangani klik di luar modal
+    
+    /**
+     * Menangani klik pada overlay (latar belakang).
+     * Jika area di luar konten diklik, maka modal akan ditutup.
+     * @param {React.MouseEvent} e - Objek event mouse.
+     */
     const handleOverlayClick = (e: React.MouseEvent) => {
         if (overlayRef.current === e.target) {
             onClose();
@@ -107,7 +132,7 @@ const Modal: FC<ModalProps> = ({
                 role="dialog"
                 aria-modal="true"
                 className={cn(
-                    "relative w-full overflow-hidden rounded-xl bg-white text-neutral-900 shadow-lg ring-1 ring-neutral-950/5 font-montserrat flex flex-col max-h-[90vh]",
+                    "relative w-full overflow-hidden rounded-none bg-white text-neutral-900 shadow-2xl ring-1 ring-neutral-950/5 font-montserrat flex flex-col max-h-[90vh]",
                     "animate-in zoom-in-95 duration-200",
                     sizeClasses[size],
                     className
@@ -135,7 +160,7 @@ const Modal: FC<ModalProps> = ({
                         )}
                         <button
                             onClick={onClose}
-                            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-neutral-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-500 dark:ring-offset-neutral-950 dark:focus:ring-neutral-300 dark:data-[state=open]:bg-neutral-800 dark:data-[state=open]:text-neutral-400"
+                            className="absolute right-4 top-4 rounded-none opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-neutral-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-neutral-100 data-[state=open]:text-neutral-500 dark:ring-offset-neutral-950 dark:focus:ring-neutral-300 dark:data-[state=open]:bg-neutral-800 dark:data-[state=open]:text-neutral-400"
                         >
                             <XIcon className="h-4 w-4" />
                             <span className="sr-only">Tutup</span>

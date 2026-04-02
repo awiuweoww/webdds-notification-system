@@ -53,7 +53,7 @@ const DisasterTable = memo(() => {
 	});
 
 	return (
-		<div className="bg-white rounded-xl border border-gray-200 shadow-sm flex-1">
+		<div className="bg-white rounded-none border border-gray-200 shadow-sm flex-1">
 			<div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
 				<h2 className="text-base font-bold text-[#1a2332]">
 					Tabel Bencana Nasional
