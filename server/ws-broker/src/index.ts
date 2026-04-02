@@ -7,8 +7,6 @@ import { WebSocket, WebSocketServer } from "ws";
 // --- KONFIGURASI ---
 const PORT = 8081;
 
-// --- TIPE DATA ---
-
 interface ClientMessage {
 	action: "subscribe" | "publish";
 	topic?: string;
@@ -20,7 +18,6 @@ interface ClientMessage {
 	data?: any;
 }
 
-/** Mapping client yang terhubung */
 interface ClientInfo {
 	ws: WebSocket;
 	subscriptions: Map<string, { field?: string; value?: string }>;
@@ -30,7 +27,6 @@ interface ClientInfo {
 const clients: Map<WebSocket, ClientInfo> = new Map();
 let clientCounter = 0;
 
-// --- UTILITAS ---
 
 /** Logging aktivitas broker */
 function log(tag: string, message: string): void {
@@ -146,7 +142,6 @@ wss.on("connection", (ws: WebSocket) => {
 	});
 });
 
-// --- SIMULATOR SENSOR (Data Otomatis) ---
 
 function publishSensorData(): void {
 	const report = {
@@ -156,7 +151,7 @@ function publishSensorData(): void {
 		latitude: "-7.5407",
 		longitude: "110.4457",
 		bencanaType: "Erupsi Gunung",
-		statusLevel: Math.floor(Math.random() * 4), // Acak Level 0-3
+		statusLevel: Math.floor(Math.random() * 4), 
 		statusPenanganan: 0,
 		observationDetail: "Data sensor otomatis.",
 		timestamp: new Date().toISOString()
@@ -166,5 +161,4 @@ function publishSensorData(): void {
 	relayToSubscribers("sensor-stream", report);
 }
 
-// Jalankan simulasi setiap 5 detik
 setInterval(publishSensorData, 5000);
